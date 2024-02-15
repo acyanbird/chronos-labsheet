@@ -6,7 +6,8 @@
 \origin unavailable
 \textclass extbook
 \begin_preamble
-\usepackage{listings}
+\usepackage{minted}
+\usepackage[dvipsnames]{xcolor}
 \end_preamble
 \use_default_options true
 \maintain_unincluded_children false
@@ -65,7 +66,7 @@
 \suppress_date false
 \justification true
 \use_refstyle 1
-\use_minted 0
+\use_minted 1
 \index Index
 \shortcut idx
 \color #008000
@@ -81,7 +82,7 @@
 \papercolumns 1
 \papersides 1
 \paperpagestyle default
-\listings_params "frame=lines,breaklines=true,columns=fullflexible"
+\listings_params "frame=lines,breaklines=true,bgcolor={gray!5},language=rust,numbers=left"
 \tracking_changes false
 \output_changes false
 \html_math_output 0
@@ -92,7 +93,7 @@
 \begin_body
 
 \begin_layout Title
-The guide to ChronOS
+The Guide to ChronOS
 \end_layout
 
 \begin_layout Author
@@ -205,6 +206,7 @@ If not, for installation on Unix-like machine (e.g.
 
 \begin_layout Standard
 \begin_inset listings
+lstparams "language=bash,fontfamily=rm,fontsize={\footnotesize},breaklines=true"
 inline false
 status open
 
@@ -224,6 +226,7 @@ For windows users install
 
 \begin_layout Standard
 \begin_inset listings
+lstparams "language=no language,language=bash"
 inline false
 status open
 
@@ -409,6 +412,7 @@ command in terminal.
 
 \begin_layout Standard
 \begin_inset listings
+lstparams "language=no language,language=rust"
 inline false
 status open
 
@@ -465,43 +469,27 @@ You can reassign values to mutable variables, but their types must remain
 \end_layout
 
 \begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
 // Declare an immutable integer variable
 \end_layout
 
-\begin_layout Plain Layout
-
+\begin_layout Standard
 let x = 10;
 \end_layout
 
-\begin_layout Plain Layout
-
+\begin_layout Standard
 // Declare a mutable integer variable
 \end_layout
 
-\begin_layout Plain Layout
-
+\begin_layout Standard
 let mut y = 20;
 \end_layout
 
-\begin_layout Plain Layout
-
+\begin_layout Standard
 // Reassign a value to the mutable variable
 \end_layout
 
-\begin_layout Plain Layout
-
+\begin_layout Standard
 y = 30;
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -526,6 +514,7 @@ Conventionally, constants are named using all uppercase letters and underscores
 
 \begin_layout Standard
 \begin_inset listings
+lstparams "language=no language,language=rust"
 inline false
 status open
 
@@ -673,6 +662,7 @@ A struct, short for structure, is a custom data type that lets you package
 
 \begin_layout Standard
 \begin_inset listings
+lstparams "language=no language,language=rust"
 inline false
 status open
 
@@ -712,6 +702,7 @@ We can create instance by
 
 \begin_layout Standard
 \begin_inset listings
+lstparams "language=no language,language=rust"
 inline false
 status open
 
@@ -797,6 +788,19 @@ However, to master this language, you'll need to continue learning as you
 \begin_layout Itemize
 \begin_inset CommandInset href
 LatexCommand href
+name "Official Rust Website"
+target "https://www.rust-lang.org/"
+literal "false"
+
+\end_inset
+
+: The official Rust website provides comprehensive documentation, tutorials,
+ and resources for learning Rust.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
 name "The Rust Programming Language"
 target "https://doc.rust-lang.org/book/"
 literal "false"
@@ -836,6 +840,40 @@ literal "false"
  If you prefer learning a new language by reading example code, then this
  book might be more suitable for you.
  
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "A half-hour to learn Rust"
+target "https://fasterthanli.me/articles/a-half-hour-to-learn-rust"
+literal "false"
+
+\end_inset
+
+: Providing lots of Rust snippets.
+ It has brief explanation of each code snippet, suitable for quick browsing.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "rustlings"
+target "https://rustlings.cool/"
+literal "false"
+
+\end_inset
+
+: This project contains small exercises to get you used to reading and writing
+ Rust code.
+\begin_inset CommandInset citation
+LatexCommand cite
+key "key-4"
+literal "false"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Chapter
@@ -1092,7 +1130,7 @@ Open a terminal and create a new Rust project by running
 
 \begin_layout Standard
 \begin_inset listings
-lstparams "language=bash,basicstyle={\small},breaklines=true,showspaces=true"
+lstparams "language=TeX,fontsize={\small},breaklines=true,showspaces=true"
 inline false
 status open
 
@@ -1212,6 +1250,7 @@ Open the src/main.rs file.
 
 \begin_layout Standard
 \begin_inset listings
+lstparams "language=no language,language=rust"
 inline false
 status open
 
@@ -1913,6 +1952,7 @@ Add these constant
 
 \begin_layout Standard
 \begin_inset listings
+lstparams "language=no language,language=rust"
 inline false
 status open
 
@@ -2000,6 +2040,7 @@ Add this line inside _start()
 
 \begin_layout Standard
 \begin_inset listings
+lstparams "language=no language,language=rust"
 inline false
 status open
 
@@ -2051,6 +2092,7 @@ Add a for loop below
 
 \begin_layout Standard
 \begin_inset listings
+lstparams "language=no language,language=rust"
 inline false
 status open
 
@@ -2174,6 +2216,7 @@ Change constant name into COLOR
 
 \begin_layout Standard
 \begin_inset listings
+lstparams "language=no language,language=rust"
 inline false
 status open
 
@@ -2206,6 +2249,7 @@ We change pointer datatype from u16 to u8 because we want to assign character
 
 \begin_layout Standard
 \begin_inset listings
+lstparams "language=no language,language=rust"
 inline false
 status open
 
@@ -2232,6 +2276,7 @@ Delete the for loop under buffer definition and change into
 
 \begin_layout Standard
 \begin_inset listings
+lstparams "language=no language,language=rust"
 inline false
 status open
 
@@ -2304,6 +2349,7 @@ d.
 \begin_layout Standard
 Remember to keep 
 \begin_inset listings
+lstparams "language=no language,language=rust"
 inline false
 status open
 
@@ -2347,6 +2393,7 @@ Remember that
 
 \begin_layout Standard
 \begin_inset listings
+lstparams "language=no language,language=rust"
 inline false
 status open
 
@@ -2371,6 +2418,7 @@ You can print words at the new line
 
 \begin_layout Standard
 \begin_inset listings
+lstparams "language=no language,language=rust"
 inline false
 status open
 
@@ -2440,6 +2488,7 @@ Or at the end
 
 \begin_layout Standard
 \begin_inset listings
+lstparams "language=no language,language=rust"
 inline false
 status open
 
@@ -2533,6 +2582,7 @@ noprefix "false"
 
 \begin_layout Standard
 \begin_inset listings
+lstparams "language=no language,language=rust"
 inline false
 status open
 
@@ -2571,6 +2621,7 @@ We create VGAChar that contain both ASCII and color.
 
 \begin_layout Standard
 \begin_inset listings
+lstparams "language=no language,language=rust"
 inline false
 status open
 
@@ -2737,6 +2788,7 @@ Step 4: Implement Writer
 
 \begin_layout Standard
 \begin_inset listings
+lstparams "language=no language,language=rust"
 inline false
 status open
 
@@ -2810,6 +2862,7 @@ This is the write_byte function that can output single character
 
 \begin_layout Standard
 \begin_inset listings
+lstparams "language=no language,language=rust"
 inline false
 status open
 
@@ -2960,6 +3013,7 @@ Step 5: new_line() function
 
 \begin_layout Standard
 \begin_inset listings
+lstparams "language=no language,language=rust"
 inline false
 status open
 
@@ -3127,6 +3181,7 @@ Here is 2 testing function.
 
 \begin_layout Standard
 \begin_inset listings
+lstparams "language=no language,language=rust"
 inline false
 status open
 
@@ -3268,6 +3323,7 @@ We creates an instance of the Writer struct, and test the basic function.
 
 \begin_layout Standard
 \begin_inset listings
+lstparams "language=no language,language=rust"
 inline false
 status open
 
@@ -3371,6 +3427,10 @@ Task 3 - Enable write! and writeln!
 
 \begin_layout Subsection
 Introduction
+\end_layout
+
+\begin_layout Standard
+
 \end_layout
 
 \begin_layout Subsection
@@ -3518,6 +3578,7 @@ We have structure VGAChar
 
 \begin_layout Standard
 \begin_inset listings
+lstparams "language=no language,language=rust"
 inline false
 status open
 
@@ -3591,6 +3652,19 @@ Klabnik, S.
  (2014) Rust by example, Introduction - Rust By Example.
  Available at: https://doc.rust-lang.org/rust-by-example/ (Accessed: 13 February
  2024).
+ 
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+key "key-4"
+literal "false"
+
+\end_inset
+
+Rustlings (2015) rustlings.
+ Available at: https://rustlings.cool/ (Accessed: 13 February 2024).
  
 \end_layout
 
