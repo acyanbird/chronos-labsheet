@@ -25,6 +25,7 @@
 \font_osf false
 \font_sf_scale 100 100
 \font_tt_scale 100 100
+\font_cjk bsmi
 \use_microtype false
 \use_dash_ligatures true
 \graphics default
@@ -82,7 +83,7 @@
 \papercolumns 1
 \papersides 1
 \paperpagestyle default
-\listings_params "frame=lines,breaklines=true,bgcolor={gray!5},language=rust,numbers=left"
+\listings_params "frame=lines,breaklines=true,bgcolor={gray!5},numbers=left,breaksymbol={},fontfamily=tt,language=rust,tabsize=4"
 \tracking_changes false
 \output_changes false
 \html_math_output 0
@@ -466,30 +467,43 @@ By default, variables in Rust are immutable, which means their values cannot
 \begin_layout Itemize
 You can reassign values to mutable variables, but their types must remain
  the same.
-\end_layout
+\begin_inset listings
+inline false
+status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
+
 // Declare an immutable integer variable
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
+
 let x = 10;
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
+
 // Declare a mutable integer variable
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
+
 let mut y = 20;
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
+
 // Reassign a value to the mutable variable
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
+
 y = 30;
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -769,10 +783,84 @@ Function
 
 \begin_layout Section
 Match
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Match"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It allows you to compare a value against a series of patterns and execute
+ code based on which pattern matches.
+ It's similar to a switch statement in other languages but more powerful.
+ For our example:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+match byte {
+\end_layout
+
+\begin_layout Plain Layout
+
+	// if not acceptable ASCII, print a space with error color
+\end_layout
+
+\begin_layout Plain Layout
+
+	0x20..=0x7e | b'
+\backslash
+n' => self.write_byte(byte, COLOR),
+\end_layout
+
+\begin_layout Plain Layout
+
+	_ => self.write_byte(b' ', ERROR_COLOR),
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+0x20..=0x7e | b'
+\backslash
+n': This is a pattern that matches any byte within the range 0x20 to 0x7e
+ or the newline character b'
+\backslash
+n'.
+ If the byte matches this pattern, self.write_byte(byte, COLOR) is executed.
+ 
+\end_layout
+
+\begin_layout Itemize
+_: This is the wildcard pattern that matches any value that hasn't been
+ matched by the previous patterns.
+ Then self.write_byte(b' ', ERROR_COLOR) is executed, printing a space with
+ error color.
 \end_layout
 
 \begin_layout Section
 Trait
+\end_layout
+
+\begin_layout Standard
+In Rust, a trait defines a set of methods that types can implement.
+ It allows for defining shared behavior across different types.
 \end_layout
 
 \begin_layout Section
@@ -811,7 +899,7 @@ literal "false"
  give you an overview of the language from first principles
 \begin_inset CommandInset citation
 LatexCommand cite
-key "key-2"
+key "key-6"
 literal "false"
 
 \end_inset
@@ -3430,15 +3518,421 @@ Introduction
 \end_layout
 
 \begin_layout Standard
-
+In this section, we will extend the write_byte function to write_string,
+ using it to output strings.
+ Furthermore, we will leverage Rust's trait functionality to accomplish
+ formatted output.
 \end_layout
 
 \begin_layout Subsection
 Implementation
 \end_layout
 
+\begin_layout Standard
+
+\series bold
+Step 1: write_string function
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+impl Writer {
+\end_layout
+
+\begin_layout Plain Layout
+
+    pub fn write_string(&mut self, s: &str) {
+\end_layout
+
+\begin_layout Plain Layout
+
+        for byte in s.bytes() {
+\end_layout
+
+\begin_layout Plain Layout
+
+            match byte {
+\end_layout
+
+\begin_layout Plain Layout
+
+                // if not acceptable ASCII, print a space with error color
+\end_layout
+
+\begin_layout Plain Layout
+
+                0x20..=0x7e | b'
+\backslash
+n' => self.write_byte(byte, COLOR),
+\end_layout
+
+\begin_layout Plain Layout
+
+                _ => self.write_byte(b' ', ERROR_COLOR),
+\end_layout
+
+\begin_layout Plain Layout
+
+            }
+\end_layout
+
+\begin_layout Plain Layout
+
+        }
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+There's a loop that iterates over each byte in the string s.
+ For each byte it calls write_byte to writes the byte to VGA buffer after
+ validation.
+ That is because not all UTF-8 encodings are supported by VGA; it only supports
+ ASCII and the encodings defined in Code page 437
+\begin_inset CommandInset citation
+LatexCommand cite
+key "key-5"
+literal "false"
+
+\end_inset
+
+.
+ Therefore, if a character (such as a Chinese character) cannot be displayed,
+ we will output a blue block as a substitute.
+ You can also choose your own error output.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /home/lucia/Downloads/Codepage-437.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Code page 437
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+You can learn more about match here
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Match"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Step 2: Implement trait
+\end_layout
+
+\begin_layout Standard
+Trait has many use cases, but we won't delve into all of them now.
+ According to the documentation
+\begin_inset CommandInset citation
+LatexCommand cite
+key "key-6"
+literal "false"
+
+\end_inset
+
+, after implementing fn write_str(&mut self, s: &str) -> Result, the trait
+ can provide us with various functionalities like formatting output.
+\end_layout
+
+\begin_layout Standard
+We just need to substitute the previously implemented write_string function,
+ ensuring that the name write_str remains unchanged.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+impl core::fmt::Write for Writer {
+\end_layout
+
+\begin_layout Plain Layout
+
+    fn write_str(&mut self, s: &str) -> core::fmt::Result {
+\end_layout
+
+\begin_layout Plain Layout
+
+        self.write_string(s);
+\end_layout
+
+\begin_layout Plain Layout
+
+        Ok(())
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+core::fmt::Result: It is an enum with two value, Ok and Err represents the
+ result of a formatting operation.
+ 
+\end_layout
+
+\begin_layout Itemize
+Ok(()): It means that the operation was successful, but there is no specific
+ value to return, so it returns the unit value ().
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Step 3: Public Buffer and writer
+\end_layout
+
+\begin_layout Standard
+Because we need to define Writer in main.rs, we have to make Buffer and Writer
+ visible.
+ This is a somewhat unsafe operation, but for now, let's proceed with this
+ to complete the testing.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+#[repr(transparent)]
+\end_layout
+
+\begin_layout Plain Layout
+
+pub struct Buffer {
+\end_layout
+
+\begin_layout Plain Layout
+
+    chars: [[Volatile<VGAChar>; BUFFER_WIDTH]; BUFFER_HEIGHT], // 2D array
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+pub struct Writer {
+\end_layout
+
+\begin_layout Plain Layout
+
+    pub column_position: usize,
+\end_layout
+
+\begin_layout Plain Layout
+
+    pub row_position: usize,
+\end_layout
+
+\begin_layout Plain Layout
+
+    pub buffer: &'static mut Buffer,
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+pub: It allows the item to be visible and it can be accessed and used outside
+ of its module.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Step 4: Create lib.rs
+\end_layout
+
+\begin_layout Standard
+Using lib.rs to import all modules is standard practice within Rust community.
+ We organizing all module imports in one place for clarity and consistency
+ in the project structure.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+#![no_std]
+\end_layout
+
+\begin_layout Plain Layout
+
+pub mod vga;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Test
+\end_layout
+
+\begin_layout Standard
+In main file, using 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+use chronos_labs::vga::Writer;
+\end_layout
+
+\begin_layout Plain Layout
+
+use chronos_labs::vga::Buffer;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Instead of
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+mod vga;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+To directly access to these two structure.
+ Remember replace the chronos_labs if you using other name.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename /home/lucia/Pictures/Screenshots/Screenshot from 2024-02-17 14-50-07.png
+	width 60page%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+unwrap(): This is used to simplify code when handling Result types.
+ We could use this becuase we are confident that the result will always
+ be Ok().
+\end_layout
+
 \begin_layout Subsection
 Output
+\end_layout
+
+\begin_layout Standard
+We can see the format is working so we could insert variable into string.
+ Each chinese character using 3 bytes, so 6 blue boxes is printed in total.
 \end_layout
 
 \begin_layout Standard
@@ -3449,6 +3943,307 @@ Output
 \end_inset
 
 
+\end_layout
+
+\begin_layout Section
+Task 3.5 - Writer in vga.rs
+\end_layout
+
+\begin_layout Subsection
+Introduction
+\end_layout
+
+\begin_layout Standard
+We can directly create a Writer instance inside the vga module and access
+ it by use.
+ By instantiating Writer within vga instead of _start(), this encapsulation
+ ensures cleaner and safer code.
+ It also facilitates future calls to the Writer.
+ 
+\end_layout
+
+\begin_layout Subsection
+Implementation
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Step 1: Add dependency
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+[dependencies]
+\end_layout
+
+\begin_layout Plain Layout
+
+...
+\end_layout
+
+\begin_layout Plain Layout
+
+spin = "0.5.2"
+\end_layout
+
+\begin_layout Plain Layout
+
+lazy_static = { version = "1.0", features = ["spin_no_std"] }
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+lazy_static: This crate in Rust provides a convenient way to define lazily
+ initialized static variables.
+ In our case is a writer instance that would be available throughout the
+ entire program execution.
+\end_layout
+
+\begin_layout Itemize
+spin: Add support of a mutex lock.
+ 
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Step 2: Initialize static WRITER
+\end_layout
+
+\begin_layout Standard
+Add these below struct writer
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+lazy_static!{
+\end_layout
+
+\begin_layout Plain Layout
+
+    pub static ref WRITER: Mutex<Writer> = Mutex::new(Writer {
+\end_layout
+
+\begin_layout Plain Layout
+
+        column_position: 0,
+\end_layout
+
+\begin_layout Plain Layout
+
+        row_position: 0,
+\end_layout
+
+\begin_layout Plain Layout
+
+        buffer: unsafe { &mut *(0xb8000 as *mut Buffer) },
+\end_layout
+
+\begin_layout Plain Layout
+
+    });
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Mutex<Writer>: It represents a mutex lock where the data type protected
+ inside the lock is Writer.
+\end_layout
+
+\begin_layout Standard
+Why we are using mutex lock? Because we want to make WRITER changable during
+ program (write into buffer).
+ So we only allow one process modify the writer at each time.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Step 3: Change visibility
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+#[repr(transparent)]
+\end_layout
+
+\begin_layout Plain Layout
+
+struct Buffer {
+\end_layout
+
+\begin_layout Plain Layout
+
+    chars: [[Volatile<VGAChar>; BUFFER_WIDTH]; BUFFER_HEIGHT], // 2D array
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+pub struct  Writer {
+\end_layout
+
+\begin_layout Plain Layout
+
+    column_position: usize,
+\end_layout
+
+\begin_layout Plain Layout
+
+    row_position: usize,
+\end_layout
+
+\begin_layout Plain Layout
+
+    buffer: &'static mut Buffer,
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We don't need to define the Buffer, row_position, column_position, and other
+ fields in main, so they can be made private again.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Test
+\end_layout
+
+\begin_layout Standard
+In main.rs
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+use chronos_labs::vga::WRITER;
+\end_layout
+
+\begin_layout Plain Layout
+
+use core::fmt::Write;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#[no_mangle]    // don't mangle the name of this function
+\end_layout
+
+\begin_layout Plain Layout
+
+pub extern "C" fn _start() {
+\end_layout
+
+\begin_layout Plain Layout
+
+    for i in 0..5 {
+\end_layout
+
+\begin_layout Plain Layout
+
+        writeln!(WRITER.lock(), "Hello World {}", i).unwrap();
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    loop {}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Imports the WRITER static variable from the vga module and import core::fmt::Wri
+te to use writeln!
+\end_layout
+
+\begin_layout Subsection
+Output
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename /home/lucia/Pictures/Screenshots/Screenshot from 2024-02-17 19-22-01.png
+	width 60page%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Chapter
+Lab 3 - Paging
 \end_layout
 
 \begin_layout Chapter
@@ -3480,7 +4275,7 @@ name "sec:VGA-text-buffer"
 \begin_layout Standard
 The VGA (Video Graphics Array) text buffer is a specific area of memory
  used to display text on the screen in a text-mode environment.
- It ist located at the memory address 0xB8000.
+ It is located at the memory address 0xB8000.
  It extends to 0xB8FA0, covering a space that allows for 25 lines of 80
  characters each, making up the standard 80x25 text mode.
 \end_layout
@@ -3665,6 +4460,34 @@ literal "false"
 
 Rustlings (2015) rustlings.
  Available at: https://rustlings.cool/ (Accessed: 13 February 2024).
+ 
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+key "key-5"
+literal "false"
+
+\end_inset
+
+Code page 437 (2024) Wikipedia.
+ Available at: https://en.wikipedia.org/wiki/Code_page_437 (Accessed: 16 February
+ 2024).
+ 
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+key "key-6"
+literal "false"
+
+\end_inset
+
+Trait core::fmt::write (no date) Rust.
+ Available at: https://doc.rust-lang.org/nightly/core/fmt/trait.Write.html (Accessed
+: 17 February 2024).
  
 \end_layout
 
