@@ -3946,7 +3946,7 @@ We can see the format is working so we could insert variable into string.
 \end_layout
 
 \begin_layout Section
-Task 3.5 - Writer in vga.rs
+Task 4 - Writer in vga.rs
 \end_layout
 
 \begin_layout Subsection
@@ -4153,6 +4153,125 @@ We don't need to define the Buffer, row_position, column_position, and other
 \begin_layout Standard
 
 \series bold
+Step 4: Change lib.rs
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+#![no_std]
+\end_layout
+
+\begin_layout Plain Layout
+
+mod vga;
+\end_layout
+
+\begin_layout Plain Layout
+
+pub use vga::WRITER;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We export WRITER only.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Step 5: Clear screen
+\end_layout
+
+\begin_layout Standard
+Add a function clear screen to reset the output window
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+impl Writer {
+\end_layout
+
+\begin_layout Plain Layout
+
+    pub fn clear_screen(&mut self) {
+\end_layout
+
+\begin_layout Plain Layout
+
+        for row in 0..BUFFER_HEIGHT {
+\end_layout
+
+\begin_layout Plain Layout
+
+            self.clear_row(row);
+\end_layout
+
+\begin_layout Plain Layout
+
+        }
+\end_layout
+
+\begin_layout Plain Layout
+
+        self.column_position = 0;
+\end_layout
+
+\begin_layout Plain Layout
+
+        self.row_position = 0;
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For now, you can call function by using
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+WRITER.lock().clear_screen();
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
 Test
 \end_layout
 
@@ -4167,7 +4286,12 @@ status open
 
 \begin_layout Plain Layout
 
-use chronos_labs::vga::WRITER;
+...
+\end_layout
+
+\begin_layout Plain Layout
+
+use chronos_labs::WRITER;
 \end_layout
 
 \begin_layout Plain Layout
@@ -4210,12 +4334,27 @@ pub extern "C" fn _start() {
 
 \begin_layout Plain Layout
 
+    // WRITER.lock().clear_screen();   // uncomment this line to clear the
+ screen
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
     loop {}
 \end_layout
 
 \begin_layout Plain Layout
 
 }
+\end_layout
+
+\begin_layout Plain Layout
+
+...
 \end_layout
 
 \end_inset
@@ -4244,6 +4383,114 @@ Output
 
 \begin_layout Chapter
 Lab 3 - Paging
+\end_layout
+
+\begin_layout Chapter
+Utility - Test tool
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+\size huge
+\color red
+Before using it, remember to comment
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+#[profile.dev]
+\end_layout
+
+\begin_layout Plain Layout
+
+#panic = "abort"
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Lab 2
+\end_layout
+
+\begin_layout Standard
+The test is available at branch 
+\begin_inset CommandInset href
+LatexCommand href
+name "test-lab2"
+target "https://github.com/acyanbird/chronos_labs/tree/test-lab2"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If you want to add them to your code add this function to vga.rs.
+ And copy and paste tests folder.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+impl Writer {
+\end_layout
+
+\begin_layout Plain Layout
+
+    pub fn get_ascii(&mut self, row: usize, col: usize) -> u8 {
+\end_layout
+
+\begin_layout Plain Layout
+
+        self.buffer.chars[row][col].read().ascii
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Using command
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+cargo test --test lab2
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Chapter
