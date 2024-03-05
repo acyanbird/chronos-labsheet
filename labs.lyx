@@ -115,7 +115,37 @@ Introduction to ChronOS
 \end_layout
 
 \begin_layout Standard
-All code available at GitHub
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /home/lucia/2023cse/project/Black_monolith_3_bold.png
+	width 60page%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+All code available at GitHub 
 \begin_inset Flex URL
 status open
 
@@ -126,32 +156,27 @@ https://github.com/acyanbird/chronos_labs/
 
 \end_inset
 
- 
+ Please see different branch for each stage.
 \end_layout
 
-\begin_layout Standard
-Please see different branch for each stage.
-\end_layout
-
-\begin_layout Standard
-Writing a lab assignment to create an operating system using Rust as the
- programming language:
-\end_layout
-
-\begin_layout Standard
+\begin_layout Subsection*
 
 \series bold
 Lab Assignment: 
-\series default
-Building an Operating System with Rust
 \end_layout
 
 \begin_layout Standard
+Building an Operating System with Rust
+\end_layout
+
+\begin_layout Subsection*
 
 \series bold
 Objective:
-\series default
- In this lab, you will learn to create a simple operating system using the
+\end_layout
+
+\begin_layout Standard
+In this lab, you will learn to create a simple operating system using the
  Rust programming language.
  Operating systems are complex pieces of software that manage hardware resources
  and provide services to other software applications.
@@ -160,7 +185,78 @@ Objective:
 \end_layout
 
 \begin_layout Standard
-.
+After completing the code, you can compare your own code or start development
+ directly based on a specific branch.
+ Skip the tedious preparation work and dive straight into your favorite
+ area.
+\end_layout
+
+\begin_layout Standard
+You can get the codes by
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "language=no language,language=bash"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+git clone git@github.com:acyanbird/chronos_labs.git
+\end_layout
+
+\begin_layout Plain Layout
+
+cd chronos_labs/ 
+\end_layout
+
+\begin_layout Plain Layout
+
+git fetch --all
+\end_layout
+
+\begin_layout Plain Layout
+
+git branch -r | grep -v '
+\backslash
+->' | while read remote; do git branch --track "${remote#origin/}" "$remote";
+ done
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+You can get the code from each task by
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "language=bash"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+git checkout <branch-name>
+\end_layout
+
+\begin_layout Plain Layout
+
+# for example
+\end_layout
+
+\begin_layout Plain Layout
+
+git checkout lab2-3
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Chapter
@@ -618,17 +714,6 @@ The unsafe keyword allows you to bypass the language's usual safety checks
  the safety of the code within the unsafe block.
 \end_layout
 
-\begin_layout Subsection
-External Code
-\begin_inset CommandInset label
-LatexCommand label
-name "subsec:External-Code"
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Section
 Module
 \begin_inset CommandInset label
@@ -641,18 +726,78 @@ name "sec:Module"
 \end_layout
 
 \begin_layout Standard
-See more on 
-\begin_inset Flex URL
+In a Rust project, you can import this module using the following syntax:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
 status open
 
 \begin_layout Plain Layout
 
-https://doc.rust-lang.org/rust-by-example/mod.html
+mod vga;
 \end_layout
 
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+It tells the compiler to load a module named vga.
+ This means the compiler will search for a file named vga.rs in the current
+ directory.
+ And allowing you to use the functionality and variables provided by that
+ module in the current scope.
+\end_layout
+
+\begin_layout Standard
+For example
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+#[no_mangle]    // don't mangle the name of this function
+\end_layout
+
+\begin_layout Plain Layout
+
+pub extern "C" fn _start() {
+\end_layout
+
+\begin_layout Plain Layout
+
+    // vga::test_print();
+\end_layout
+
+\begin_layout Plain Layout
+
+    vga::test_rolldown();
+\end_layout
+
+\begin_layout Plain Layout
+
+    loop {}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It can use test_rolldown() function that declare in vga.rs file.
 \end_layout
 
 \begin_layout Section
@@ -761,10 +906,6 @@ name "subsec:Impl"
 \end_inset
 
 
-\end_layout
-
-\begin_layout Standard
-TODO
 \end_layout
 
 \begin_layout Standard
@@ -1363,7 +1504,7 @@ status open
 
 \begin_layout Plain Layout
 
-pub extern "C" fn _start() {
+pub extern "C" fn _start() -> ! {
 \end_layout
 
 \begin_layout Plain Layout
@@ -1441,17 +1582,16 @@ Here is the detail explaination of this part:
 
 \begin_layout Itemize
 pub extern "C" fn _start() -> !: Defines the entry point for our program.
- The function will use the C ABI for compatibility with C code 
+ The function will use the C calling convention.
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "subsec:External-Code"
+reference "sec:Calling-convention"
 plural "false"
 caps "false"
 noprefix "false"
 
 \end_inset
 
-.
  The ! return type indicates that this function will never return.
  
 \end_layout
@@ -2655,17 +2795,7 @@ Step 1: Create src/vga.rs file
 \begin_layout Standard
 Create a vga.rs file in the src folder, and copy the necessary declarations.
  We will import this file as module to main.
- More about module?
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sec:Module"
-plural "false"
-caps "false"
-noprefix "false"
-
-\end_inset
-
-
+ 
 \end_layout
 
 \begin_layout Standard
@@ -3453,6 +3583,20 @@ pub extern "C" fn _start() {
 
 }
 \end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+More about module?
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Module"
+plural "false"
+caps "false"
+noprefix "false"
 
 \end_inset
 
@@ -4385,6 +4529,21 @@ Output
 Lab 3 - Paging
 \end_layout
 
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Standard
+This part is associated with CS257:Advanced Computer Architecture's virtual
+ memory section.
+ It is strongly recommended that you complete this lab after studying/reviewing
+ that course.
+\end_layout
+
+\begin_layout Chapter
+Lab 4 - Heap Allocation
+\end_layout
+
 \begin_layout Chapter
 Utility - Test tool
 \end_layout
@@ -4498,6 +4657,138 @@ Extra knowledge
 \end_layout
 
 \begin_layout Section
+Calling convention
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Calling-convention"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Calling conventions are a standardized method for functions to be implemented
+ and called by the machine.
+ A calling convention specifies the method that a compiler sets up to access
+ a subroutine.
+\begin_inset CommandInset citation
+LatexCommand cite
+key "key-7"
+literal "false"
+
+\end_inset
+
+ Here's a simple C code example demonstrating a function call using the
+ cdecl convention:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "language=no language,language=C"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+#include <stdio.h>
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+int add(int a, int b) {
+\end_layout
+
+\begin_layout Plain Layout
+
+    return a + b;
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+int main() {
+\end_layout
+
+\begin_layout Plain Layout
+
+    int result = add(3, 5);  // Function call using cdecl
+\end_layout
+
+\begin_layout Plain Layout
+
+    printf("The result is: %d
+\backslash
+n", result);
+\end_layout
+
+\begin_layout Plain Layout
+
+    return 0;
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Add function takes two integers as arguments and returns their sum.
+\end_layout
+
+\begin_layout Itemize
+When add(3, 5) is called, 5 is pushed onto the stack first, followed by
+ 3.
+\end_layout
+
+\begin_layout Itemize
+After add returns, the main function cleans up the stack by removing the
+ two arguments.
+\end_layout
+
+\begin_layout Itemize
+The sum, which is the return value of add, is placed in the EAX register
+ (on x86) and then stored in the result variable.
+\end_layout
+
+\begin_layout Standard
+We use the C calling convention because it is widely recognized, while Rust
+ does not yet have a stable calling convention released, as it is still
+ under development.
+ See 
+\begin_inset CommandInset href
+LatexCommand href
+name "here"
+target "https://internals.rust-lang.org/t/pre-rfc-interrupt-calling-conventions/16182"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
 What did bootimage tool do?
 \begin_inset CommandInset label
 LatexCommand label
@@ -4506,6 +4797,27 @@ name "sec:What-did-bootimage"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+The process of booting a system is a complex topic.
+ You can find more information about it 
+\begin_inset CommandInset href
+LatexCommand href
+name "here"
+target "https://wiki.ubuntu.com/Booting"
+literal "false"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The BIOS will wake up the bootloader, which first compiles all dependencies
+ into a standalone executable.
+ Then, it compiles our kernel into an ELF file and jumps to the _start function
+ to begin execution.
 \end_layout
 
 \begin_layout Section
@@ -4735,6 +5047,22 @@ literal "false"
 Trait core::fmt::write (no date) Rust.
  Available at: https://doc.rust-lang.org/nightly/core/fmt/trait.Write.html (Accessed
 : 17 February 2024).
+ 
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+key "key-7"
+literal "false"
+
+\end_inset
+
+Cary, D.
+ (2007) X86 disassembly/calling conventions, Wikibooks, open books for an
+ open world.
+ Available at: https://en.wikibooks.org/wiki/X86_Disassembly/Calling_Conventions
+ (Accessed: 27 February 2024).
  
 \end_layout
 
