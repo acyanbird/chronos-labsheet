@@ -4530,10 +4530,12 @@ Lab 3 - Paging
 \end_layout
 
 \begin_layout Section
-Introduction
+Expected Outcome
 \end_layout
 
 \begin_layout Standard
+
+\series bold
 This part is associated with CS257:Advanced Computer Architecture's virtual
  memory section.
  It is strongly recommended that you complete this lab after studying/reviewing
