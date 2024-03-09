@@ -259,6 +259,30 @@ git checkout lab2-3
 
 \end_layout
 
+\begin_layout Standard
+If you want to work from existing branch
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+# like you currently on lab2-3 and want to work on it
+\end_layout
+
+\begin_layout Plain Layout
+
+git checkout -b <your-branch-name>
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Chapter
 Lab 0 - Introduction to Rust Programming languoage
 \end_layout
@@ -344,6 +368,13 @@ rustup-init.exe
 
 \begin_layout Subsection
 Integrated Development Environment
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:Integrated-Development-Environme"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -920,6 +951,85 @@ s for the specified type.
 
 \begin_layout Section
 Function
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Function"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The most important function in Rust is main, which is the entry point of
+ many programs.
+ But in our case the thing is a bit different, we don't have a standard
+ main function since we are doing the system development.
+ In lab1-1 it is using _start().
+ We use the panic as example to explain every part of function
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "language=no language,language=rust"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+fn panic(_info: &core::panic::PanicInfo) -> ! {
+\end_layout
+
+\begin_layout Plain Layout
+
+    // the `!` type means "this function never returns"
+\end_layout
+
+\begin_layout Plain Layout
+
+    // place holder for now, we'll write this function later
+\end_layout
+
+\begin_layout Plain Layout
+
+    loop {}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+fn keyword
+\series default
+; In Rust, a function is defined using the fn keyword, followed by the function
+ name (panic in this case)
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+function parameters; 
+\series default
+These are specified within parentheses if there is any (could be none) _info
+ is a parameter of type &core::panic::PanicInfo
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+->
+\series default
+; indicates the return type of the function, ! means the function doesn't
+ return a value
 \end_layout
 
 \begin_layout Section
@@ -1194,6 +1304,28 @@ rustup update nightly
 \end_layout
 
 \begin_layout Itemize
+Suitable IDE
+\end_layout
+
+\begin_layout Standard
+After installing Rust, choose a suitable IDE as the development environment,
+ as introduced in Lab 0.
+ Please follow instruction heree
+\series bold
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:Integrated-Development-Environme"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
 bootimage
 \end_layout
 
@@ -1359,7 +1491,7 @@ Open a terminal and create a new Rust project by running
 
 \begin_layout Standard
 \begin_inset listings
-lstparams "language=TeX,fontsize={\small},breaklines=true,showspaces=true"
+lstparams "language=bash,fontsize={\small},breaklines=true,showspaces=true"
 inline false
 status open
 
@@ -1606,6 +1738,16 @@ For more information see
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:Attributes"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Function"
 plural "false"
 caps "false"
 noprefix "false"
