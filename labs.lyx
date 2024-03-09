@@ -135,13 +135,22 @@ status open
 
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
-
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+Please ensure to stay updated with the GitHub repo 
+\begin_inset CommandInset href
+LatexCommand href
+name "here"
+target "https://github.com/acyanbird/chronos-labsheet"
+literal "false"
+
+\end_inset
+
+ to obtain the latest version of the lab sheet.
 \end_layout
 
 \begin_layout Standard
@@ -284,7 +293,12 @@ git checkout -b <your-branch-name>
 \end_layout
 
 \begin_layout Chapter
-Lab 0 - Introduction to Rust Programming languoage
+Lab 0 - Introduction to Rust Programming language
+\end_layout
+
+\begin_layout Standard
+You can start from Lab 1 directly, you will jump back to here if you encounter
+ new component from Rust.
 \end_layout
 
 \begin_layout Section
@@ -1310,7 +1324,7 @@ Suitable IDE
 \begin_layout Standard
 After installing Rust, choose a suitable IDE as the development environment,
  as introduced in Lab 0.
- Please follow instruction heree
+ Please follow instruction here
 \series bold
  
 \begin_inset CommandInset ref
