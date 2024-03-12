@@ -222,15 +222,24 @@ cd chronos_labs/
 
 \begin_layout Plain Layout
 
+git branch -r | grep -v '
+\backslash
+->' | sed "s,
+\backslash
+x1B
+\backslash
+[[0-9;]*[a-zA-Z],,g" | while read remote; do git branch --track "${remote#origin
+/}" "$remote"; done
+\end_layout
+
+\begin_layout Plain Layout
+
 git fetch --all
 \end_layout
 
 \begin_layout Plain Layout
 
-git branch -r | grep -v '
-\backslash
-->' | while read remote; do git branch --track "${remote#origin/}" "$remote";
- done
+git pull --all
 \end_layout
 
 \end_inset
@@ -2616,7 +2625,18 @@ const COLOR: u8 = 0x04; // black background, red foreground
 
 \begin_layout Standard
 You could change into different value to represent different color as you
- wish!
+ wish! See the reference on 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://wiki.osdev.org/Printing_To_Screen
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -4698,8 +4718,83 @@ This part is associated with CS257:Advanced Computer Architecture's virtual
  that course.
 \end_layout
 
-\begin_layout Chapter
-Lab 4 - Heap Allocation
+\begin_layout Standard
+In this lab, we will be able to understand paging, translate virtual address
+ to physical address and create mapping.
+ Because this kernel is built on x86_64 architecture and using bootloader,
+ it is already support multilevel page tables.
+ We could have a look using the tool provided here.
+\end_layout
+
+\begin_layout Section
+Why paging?
+\end_layout
+
+\begin_layout Section
+Task 1 - Traverse the page Table
+\end_layout
+
+\begin_layout Subsection
+Introduction
+\end_layout
+
+\begin_layout Standard
+This system currently utilizes a 4-level page table.
+ For this task, we would know how your system build this page table and
+ we could go through it.
+\end_layout
+
+\begin_layout Subsection
+Implementation
+\end_layout
+
+\begin_layout Subsection
+Output
+\end_layout
+
+\begin_layout Standard
+This is the output when we only display first entry of every level of table
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename /home/lucia/Pictures/Screenshots/Screenshot from 2024-03-11 22-12-56.png
+	width 60page%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Task 2 - Address translation
+\end_layout
+
+\begin_layout Subsection
+Introduction
+\end_layout
+
+\begin_layout Subsection
+Implementation
+\end_layout
+
+\begin_layout Subsection
+Output
+\end_layout
+
+\begin_layout Standard
+You would get the output of the translation from virtual address to physical
+ address.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename /home/lucia/Pictures/Screenshots/Screenshot from 2024-03-12 13-48-34.png
+	width 60page%
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Chapter
@@ -4808,6 +4903,11 @@ cargo test --test lab2
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+And for the exception handling, make sure you provide blue color for the
+ exception, or the test would fail.
 \end_layout
 
 \begin_layout Chapter
@@ -5124,6 +5224,19 @@ If you create a VGAChar with an ascii of 0x41 ('A') and a color of 0x04,
  it would be stored in memory as 41 04 in a little endian system.
  This is because ascii_character is the first field in the struct, so it
  gets the lower memory address.
+\end_layout
+
+\begin_layout Section
+CR3 register
+\end_layout
+
+\begin_layout Standard
+CR3, or Control Register 3, is a special-purpose register in the x86 architectur
+e used for memory management.
+ It stores the base address of the page table of the currently running process.
+ For our case, it is the physical address for level 4 page table.
+ When the process changed, address in CR3 also changed.
+ It ensures isolation between processes and efficient use of system resources.
 \end_layout
 
 \begin_layout Bibliography
