@@ -94,7 +94,13 @@
 \begin_body
 
 \begin_layout Title
-The Guide to ChronOS
+
+\series bold
+The Guide to Chron
+\color red
+O
+\color inherit
+S
 \end_layout
 
 \begin_layout Author
@@ -166,16 +172,6 @@ https://github.com/acyanbird/chronos_labs/
 \end_inset
 
  Please see different branch for each stage.
-\end_layout
-
-\begin_layout Subsection*
-
-\series bold
-Lab Assignment: 
-\end_layout
-
-\begin_layout Standard
-Building an Operating System with Rust
 \end_layout
 
 \begin_layout Subsection*
@@ -295,6 +291,31 @@ status open
 
 git checkout -b <your-branch-name>
 \end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+
+\series bold
+Learning Order:
+\end_layout
+
+\begin_layout Standard
+Lab 0 is a simple tutorial on the Rust language.
+ You can skip directly to Lab 1 for learning.
+ I will provide a link to return to Lab 0 later.
+ Please complete Lab 1 and Lab 2 in sequence, and then you can choose to
+ proceed to either Lab 3 or Lab 4.
+ These two labs are independent of each other.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename /home/lucia/Pictures/Screenshots/Screenshot from 2024-03-24 13-06-49.png
+	scale 40
 
 \end_inset
 
@@ -1130,11 +1151,41 @@ _: This is the wildcard pattern that matches any value that hasn't been
 
 \begin_layout Section
 Trait
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Trait"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
 In Rust, a trait defines a set of methods that types can implement.
  It allows for defining shared behavior across different types.
+ It usually require programmer to provide n
+\end_layout
+
+\begin_layout Section
+Declarative Macro
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Declarative-Macro"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Reference and Dereference
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Reference-and-Dereference"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -1256,7 +1307,7 @@ In this lab, we'll create a Rust program entirely from scratch, free from
  any reliance on a host operating system.
  Our goal is to develop a minimal 64-bit kernel that can display text using
  VGA through QEMU.
- Below is the expected output.
+ 
 \end_layout
 
 \begin_layout Section
@@ -1897,11 +1948,6 @@ We'll use Rust to create a small 64-bit kernel for the x86 architecture
  base on program we made for previous task.
  We will use the bootloader tool to create a bootable disk image, allowing
  us to launch it using QEMU.
- 
-\end_layout
-
-\begin_layout Standard
-See branch lab-1-2 for the code.
  
 \end_layout
 
@@ -2559,6 +2605,10 @@ In this lab, we'll implement support of safety output string, number and
  less, cleaner, and more concise code.
  We will establish an interface that ensures safety and simplicity by isolating
  all unsafe operations within a dedicated module.
+\begin_inset Newline newline
+\end_inset
+
+You will implement the section of the operating system that manages output.
 \end_layout
 
 \begin_layout Section
@@ -4068,6 +4118,10 @@ Ok(()): It means that the operation was successful, but there is no specific
 \end_layout
 
 \begin_layout Standard
+You can learn more about trait here 
+\end_layout
+
+\begin_layout Standard
 
 \series bold
 Step 3: Public Buffer and writer
@@ -4684,7 +4738,7 @@ pub extern "C" fn _start() {
 
 \begin_layout Standard
 Imports the WRITER static variable from the vga module and import core::fmt::Wri
-te to use writeln!
+te to use writeln! write! and writeln! is called 
 \end_layout
 
 \begin_layout Subsection
@@ -4702,7 +4756,20 @@ Output
 \end_layout
 
 \begin_layout Chapter
-Lab 3 - Paging
+Lab 3 - Keybroad Input
+\end_layout
+
+\begin_layout Section
+Expected Outcome
+\end_layout
+
+\begin_layout Standard
+In this lab, you will implement the aspect of the operating system that
+ manages interrupts and hardware input.
+\end_layout
+
+\begin_layout Chapter
+Lab 4 - Paging
 \end_layout
 
 \begin_layout Section
@@ -4723,15 +4790,74 @@ In this lab, we will be able to understand paging, translate virtual address
  to physical address and create mapping.
  Because this kernel is built on x86_64 architecture and using bootloader,
  it is already support multilevel page tables.
- We could have a look using the tool provided here.
+ 
 \end_layout
 
 \begin_layout Section
-Why paging?
+Quick Overview
+\end_layout
+
+\begin_layout Standard
+If you're not very clear on the concepts of virtual addresses and physical
+ addresses, please check here.
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Virtual-Address-&"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename /home/lucia/2023cse/project/sDyyu.png
+	width 50page%
+
+\end_inset
+
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "key-8"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Paging is a memory management technique in computers.
+ It maps a process's virtual address space to physical memory.
+ Physical memory is divided into fixed-size blocks called "pages," and the
+ process's virtual address space is divided into equally sized blocks called
+ "page frames." The operating system uses a page table to track the mapping
+ between virtual and physical addresses.
+ When a process accesses a virtual address, the operating system translates
+ it into the corresponding physical address using the page table, enabling
+ virtual memory.
+ 
+\begin_inset Newline newline
+\end_inset
+
+In our operating system, virtual addresses map to the entire physical address
+ space, allowing them to access any physical address.
+ To avoid conflicts with actual addresses, we use a larger offset, such
+ as 1T.
+ This ensures that virtual addresses do not overlap with physical addresses.
+\begin_inset Newline newline
+\end_inset
+
+The process of translating virtual addresses into physical addresses will
+ be gradually introduced and implemented step by step in the upcoming labs.
 \end_layout
 
 \begin_layout Section
-Task 1 - Traverse the page Table
+Task 1 - Get in touch with L4 table
 \end_layout
 
 \begin_layout Subsection
@@ -4739,13 +4865,435 @@ Introduction
 \end_layout
 
 \begin_layout Standard
-This system currently utilizes a 4-level page table.
- For this task, we would know how your system build this page table and
- we could go through it.
+In this task, we will access the CR3 register to obtain the physical address
+ of the L4 page table.
+ Then we need to virtual page that is mapped to the physical frame at address
+ 0x1000 because we can't directly access physical address due to security
+ reason.
+ After that, we will traverse the L4 page table, print non-empty entries,
+ and obtain the information stored in the L3 page table.
 \end_layout
 
 \begin_layout Subsection
 Implementation
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Step 1: Add dependency
+\end_layout
+
+\begin_layout Standard
+Edit Cargo.toml
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+[dependencies]
+\end_layout
+
+\begin_layout Plain Layout
+
+...
+\end_layout
+
+\begin_layout Plain Layout
+
+bootloader = { version = "0.9", features = ["map_physical_memory"]}
+\end_layout
+
+\begin_layout Plain Layout
+
+x86_64 = "0.14.2" 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We need one more feature support of bootloader, and the support of x86_64
+ crate for page table support.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Step 2: Read CR3 register
+\end_layout
+
+\begin_layout Standard
+The CR3 register stores the physical address of the L4 page table we want
+ to access.
+ Let's access it and print out the address of the L4 page table.
+ Edit src/main.rs
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+...
+\end_layout
+
+\begin_layout Plain Layout
+
+use x86_64::registers::control::Cr3;
+\end_layout
+
+\begin_layout Plain Layout
+
+#[no_mangle]    // don't mangle the name of this function
+\end_layout
+
+\begin_layout Plain Layout
+
+pub extern "C" fn _start(boot_info: &'static BootInfo) -> ! {
+\end_layout
+
+\begin_layout Plain Layout
+
+    let (l4_entry, _) = Cr3::read();
+\end_layout
+
+\begin_layout Plain Layout
+
+    writeln!(WRITER.lock(),
+\end_layout
+
+\begin_layout Plain Layout
+
+             "Level 4 page table at: {:?}",
+\end_layout
+
+\begin_layout Plain Layout
+
+             l4_entry.start_address()
+\end_layout
+
+\begin_layout Plain Layout
+
+    ).unwrap();
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+_ menas we will not using this variable, so just ignore it.
+\end_layout
+
+\begin_layout Standard
+We could get the output of address
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename /home/lucia/Pictures/Screenshots/Screenshot from 2024-03-24 17-14-07.png
+	width 60page%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Step 3: Get physical memory offset
+\end_layout
+
+\begin_layout Standard
+We need to read the physical memory offset in the boot_info, so our function
+ should accept boot_info as input parameter.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+...
+\end_layout
+
+\begin_layout Plain Layout
+
+use bootloader::BootInfo; 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#[no_mangle]    // don't mangle the name of this function
+\end_layout
+
+\begin_layout Plain Layout
+
+pub extern "C" fn _start(boot_info: &'static BootInfo) -> ! {
+\end_layout
+
+\begin_layout Plain Layout
+
+    let (l4_entry, _) = Cr3::read();
+\end_layout
+
+\begin_layout Plain Layout
+
+    writeln!(WRITER.lock(),
+\end_layout
+
+\begin_layout Plain Layout
+
+             "Level 4 page table at: {:?}",
+\end_layout
+
+\begin_layout Plain Layout
+
+             l4_entry.start_address()
+\end_layout
+
+\begin_layout Plain Layout
+
+    ).unwrap();
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset);
+\end_layout
+
+\begin_layout Plain Layout
+
+    writeln!(WRITER.lock(),
+\end_layout
+
+\begin_layout Plain Layout
+
+             "Physical memory offset: {:?}",
+\end_layout
+
+\begin_layout Plain Layout
+
+             phys_mem_offset
+\end_layout
+
+\begin_layout Plain Layout
+
+    ).unwrap();
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Then we could get the physical memory offset to create the virtual page.
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Graphics
+	filename /home/lucia/Pictures/Screenshots/Screenshot from 2024-03-24 18-10-28.png
+	width 60page%
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\series bold
+Step 4: Create virtual page mapped to 0x1000
+\end_layout
+
+\begin_layout Standard
+We could get the virtual address by physical address + physical page offset.
+ Add under phys_mem_offset
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+...
+\end_layout
+
+\begin_layout Plain Layout
+
+use x86_64::structures::paging::PageTable;
+\end_layout
+
+\begin_layout Plain Layout
+
+use x86_64::VirtAddr;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+...
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    let virt = phys_mem_offset + l4_entry.start_address().as_u64();
+\end_layout
+
+\begin_layout Plain Layout
+
+    let l4_ptr: *mut PageTable = virt.as_mut_ptr();
+\end_layout
+
+\begin_layout Plain Layout
+
+    writeln!(WRITER.lock(), "Virtual address: {:?}", l4_ptr).unwrap();
+\end_layout
+
+\begin_layout Plain Layout
+
+    let l4_table = unsafe { &*l4_ptr };
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+let l4_ptr: *mut PageTable : It declares variable l4_ptr in type *mut PageTable.
+ *mut PageTable is the type of the variable.
+ It's a mutable pointer (*mut) to a PageTable.
+ 
+\end_layout
+
+\begin_layout Standard
+Then we could see the virtual address of page.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename /home/lucia/Pictures/Screenshots/Screenshot from 2024-03-24 18-15-48.png
+	width 60page%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Step 5: Traverse the L4 page table
+\end_layout
+
+\begin_layout Standard
+Under l4_table
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+for (i, entry) in l4_table.iter().enumerate() {
+\end_layout
+
+\begin_layout Plain Layout
+
+        // try to print all entries?
+\end_layout
+
+\begin_layout Plain Layout
+
+        // writeln!(WRITER.lock(), "L4 Entry {}: {:?}", i, entry).unwrap();
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+        if !entry.is_unused() {
+\end_layout
+
+\begin_layout Plain Layout
+
+            writeln!(WRITER.lock(), "L4 Entry {}: {:?}", i, entry).unwrap();
+\end_layout
+
+\begin_layout Plain Layout
+
+        }
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+.iter(): It is a method is used to create an iterator over a collection.
+ It returns an iterator that allows you to iterate over the elements of
+ the collection.
+\end_layout
+
+\begin_layout Itemize
+.enumerate(): It yields tuples containing the index and the corresponding
+ value from the original iterator.
+\end_layout
+
+\begin_layout Standard
+We print only non-empty entries in the page table because it helps us focus
+ on relevant information.
+ Printing all entries might overwhelm us with unnecessary data, making it
+ harder to understand the page table's structure and content.
+ However, you can print all entries if you want to experiment and inspect
+ thoroughly.
 \end_layout
 
 \begin_layout Subsection
@@ -4753,7 +5301,362 @@ Output
 \end_layout
 
 \begin_layout Standard
-This is the output when we only display first entry of every level of table
+The output will display the physical address of the L4 page table stored
+ in the CR3 register, along with the output of each non-empty entry in the
+ L4 page table.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename /home/lucia/Pictures/Screenshots/Screenshot from 2024-03-24 12-27-51.png
+	width 60page%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We also can have a look of all entries in L4 table
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename /home/lucia/Pictures/Screenshots/Screenshot from 2024-03-24 12-58-57.png
+	width 60page%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Task 2 - Traverse four-level page table
+\end_layout
+
+\begin_layout Subsection
+Introduction
+\end_layout
+
+\begin_layout Standard
+In this task, we will learn how to read entries in the page table and use
+ this information to access the next level of the page table.
+ This task is similar to reading CR3 and generating the mapped-to physical
+ address at a specified location.
+ However, to maintain readability, we limit the output to only the first
+ few non-empty entries.
+ In the labsheet, I will demonstrate how to print the L4 and L3 page tables.
+ You can implement the methods for printing the L2 and L1 page tables by
+ yourself.
+ Of course, the solution would be available at branch lab4-2.
+\end_layout
+
+\begin_layout Subsection
+Implementation
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Step 1: Add limitation
+\end_layout
+
+\begin_layout Standard
+Add constant to limit how many non-empty entry you want to show.
+ We set 2 for now.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+...
+\end_layout
+
+\begin_layout Plain Layout
+
+use x86_64::VirtAddr;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+const DISPLAY_ENTRY: i32 = 2;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Then define the counter:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+...
+\end_layout
+
+\begin_layout Plain Layout
+
+let l4_table = unsafe { &*l4_ptr };
+\end_layout
+
+\begin_layout Plain Layout
+
+    // counter
+\end_layout
+
+\begin_layout Plain Layout
+
+    let mut l4_counter = 0;
+\end_layout
+
+\begin_layout Plain Layout
+
+    let mut l3_counter = 0;
+\end_layout
+
+\begin_layout Plain Layout
+
+    for (i, entry) in l4_table.iter().enumerate() {
+\end_layout
+
+\begin_layout Plain Layout
+
+...
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Step 2: Show first 2 entries of L4
+\end_layout
+
+\begin_layout Standard
+In each loop, increment the counter by 1.
+ Then check weather l4_counter is less then DISPLAY_ENTRY
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+    for (i, entry) in l4_table.iter().enumerate() {
+\end_layout
+
+\begin_layout Plain Layout
+
+        if !entry.is_unused() && l4_counter < DISPLAY_ENTRY {
+\end_layout
+
+\begin_layout Plain Layout
+
+            writeln!(WRITER.lock(), "L4 Entry {}: {:?}", i, entry).unwrap();
+\end_layout
+
+\begin_layout Plain Layout
+
+            l4_counter += 1;
+\end_layout
+
+\begin_layout Plain Layout
+
+        }
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We could see the output
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Graphics
+	filename /home/lucia/Pictures/Screenshots/Screenshot from 2024-03-24 19-11-33.png
+	width 60page%
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\series bold
+Step 3: Access L3 page table
+\end_layout
+
+\begin_layout Standard
+To read the entries in the L4 page table, you can follow a similar approach
+ to reading the address stored in CR3.
+ Create a new page table that points to this physical address.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+            let phys = entry.frame().unwrap().start_address();
+\end_layout
+
+\begin_layout Plain Layout
+
+            let virt = phys.as_u64() + boot_info.physical_memory_offset;
+\end_layout
+
+\begin_layout Plain Layout
+
+            let l3_ptr = VirtAddr::new(virt).as_mut_ptr();
+\end_layout
+
+\begin_layout Plain Layout
+
+            let l3_table: &PageTable = unsafe { &*l3_ptr };
+\end_layout
+
+\begin_layout Plain Layout
+
+            write!(WRITER.lock(), "L3 table at: {:p}", l3_ptr).unwrap();
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename /home/lucia/Pictures/Screenshots/Screenshot from 2024-03-24 19-15-24.png
+	width 60page%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We can observe that this virtual address consists of a entry plus a physical
+ memory offset.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Step 4: Traverse L3 page table
+\end_layout
+
+\begin_layout Standard
+We access each L3 page table pointed to by the printed L4 entries.
+ After iterating through each L3 page table, we reset the counter to zero.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+            // print non-empty entries of the level 3 table
+\end_layout
+
+\begin_layout Plain Layout
+
+            for (i, entry) in l3_table.iter().enumerate() {
+\end_layout
+
+\begin_layout Plain Layout
+
+                if !entry.is_unused()  && l3_counter < DISPLAY_ENTRY{
+\end_layout
+
+\begin_layout Plain Layout
+
+                    writeln!(WRITER.lock(), "   L3 Entry {}: {:?}", i, entry).unwr
+ap();
+\end_layout
+
+\begin_layout Plain Layout
+
+                    l3_counter += 1;
+\end_layout
+
+\begin_layout Plain Layout
+
+                }
+\end_layout
+
+\begin_layout Plain Layout
+
+            }
+\end_layout
+
+\begin_layout Plain Layout
+
+            l3_counter = 0;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename /home/lucia/Pictures/Screenshots/Screenshot from 2024-03-24 19-32-25.png
+	width 60page%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Step 5: Extend to L2 and L1
+\end_layout
+
+\begin_layout Standard
+Due to space constraints and the similarity of the implementation steps
+ to L3, we won't expand on it here.
+\end_layout
+
+\begin_layout Subsection
+Output
+\end_layout
+
+\begin_layout Standard
+This is the output when we only display first entry of every level of table.
+ For here we limit to just print the first non-empty entry.
 \end_layout
 
 \begin_layout Standard
@@ -4767,7 +5670,7 @@ This is the output when we only display first entry of every level of table
 \end_layout
 
 \begin_layout Section
-Task 2 - Address translation
+Task 3 - Address translation
 \end_layout
 
 \begin_layout Subsection
@@ -5227,6 +6130,50 @@ If you create a VGAChar with an ascii of 0x41 ('A') and a color of 0x04,
 \end_layout
 
 \begin_layout Section
+Virtual Address & Physical Address
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Virtual-Address-&"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Virtual addresses and physical addresses both serve as pointers to data
+ storage locations, but they operate differently.
+ 
+\begin_inset Newline newline
+\end_inset
+
+
+\series bold
+Virtual address 
+\series default
+is like a label created by the CPU for programs to use when they want to
+ access memory.
+ It helps programs talk to memory without worrying about where exactly things
+ are stored physically.
+ It can be seen as an abstraction of actual physical storage devices.
+ Different processes can have the same virtual address, but physical addresses
+ are unique.
+\begin_inset Newline newline
+\end_inset
+
+
+\series bold
+Physical address
+\series default
+ corresponds to a specific location in the physical memory (RAM) of a computer,
+ representing an actual spot on the computer's memory hardware.
+ It serves as a direct reference to where data is stored within the computer's
+ memory system.
+ The conversion between virtual addresses and physical addresses is the
+ responsibility of the operating system.
+\end_layout
+
+\begin_layout Section
 CR3 register
 \end_layout
 
@@ -5334,6 +6281,23 @@ Cary, D.
  open world.
  Available at: https://en.wikibooks.org/wiki/X86_Disassembly/Calling_Conventions
  (Accessed: 27 February 2024).
+ 
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+key "key-8"
+literal "false"
+
+\end_inset
+
+Frank, M.
+ (2013) On x86 architecture, why are there fewer bits for virtual address
+ space than physical?, Super User.
+ Available at: https://superuser.com/questions/655121/on-x86-architecture-why-are
+-there-fewer-bits-for-virtual-address-space-than-phy (Accessed: 24 March
+ 2024).
  
 \end_layout
 
