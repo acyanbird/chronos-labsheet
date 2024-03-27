@@ -1150,6 +1150,112 @@ _: This is the wildcard pattern that matches any value that hasn't been
 \end_layout
 
 \begin_layout Section
+Declarative Macro
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Declarative-Macro"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Rust macros typically end with an !, it allows you to write code that writes
+ other code, which is known as metaprogramming.
+ Or it can be understood as rules for replacing code during compilation.
+ When called in the code, they match patterns and generate code based on
+ those patterns.
+ These macros are executed entirely under the control of the compiler during
+ expansion, resulting in the generation of the required code at compile
+ time, which is then executed at runtime.
+ Because write! macro is not really straight forward, we use vec! as example
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+let v: Vec<u32> = vec![1, 2, 3];
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#[macro_export]
+\end_layout
+
+\begin_layout Plain Layout
+
+macro_rules! vec {
+\end_layout
+
+\begin_layout Plain Layout
+
+    ( $( $x:expr ),* ) => {
+\end_layout
+
+\begin_layout Plain Layout
+
+        {
+\end_layout
+
+\begin_layout Plain Layout
+
+            let mut temp_vec = Vec::new();
+\end_layout
+
+\begin_layout Plain Layout
+
+            $(
+\end_layout
+
+\begin_layout Plain Layout
+
+                temp_vec.push($x);
+\end_layout
+
+\begin_layout Plain Layout
+
+            )*
+\end_layout
+
+\begin_layout Plain Layout
+
+            temp_vec
+\end_layout
+
+\begin_layout Plain Layout
+
+        }
+\end_layout
+
+\begin_layout Plain Layout
+
+    };
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It will create a new vector, then push 1, 2, 3 into it.
+\end_layout
+
+\begin_layout Section
 Trait
 \begin_inset CommandInset label
 LatexCommand label
@@ -1163,29 +1269,64 @@ name "sec:Trait"
 \begin_layout Standard
 In Rust, a trait defines a set of methods that types can implement.
  It allows for defining shared behavior across different types.
- It usually require programmer to provide n
+ It usually require programmer to provide a method, and then provide other
+ method base on it.
+ In our case, for Trait core::fmt::Write we provide write_str
 \end_layout
 
-\begin_layout Section
-Declarative Macro
-\begin_inset CommandInset label
-LatexCommand label
-name "sec:Declarative-Macro"
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+pub trait Write {
+\end_layout
+
+\begin_layout Plain Layout
+
+    // Required method
+\end_layout
+
+\begin_layout Plain Layout
+
+    fn write_str(&mut self, s: &str) -> Result;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    // Provided methods
+\end_layout
+
+\begin_layout Plain Layout
+
+    fn write_char(&mut self, c: char) -> Result { ...
+ }
+\end_layout
+
+\begin_layout Plain Layout
+
+    fn write_fmt(&mut self, args: Arguments<'_>) -> Result { ...
+ }
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
 
 \end_inset
 
 
 \end_layout
 
-\begin_layout Section
-Reference and Dereference
-\begin_inset CommandInset label
-LatexCommand label
-name "sec:Reference-and-Dereference"
-
-\end_inset
-
-
+\begin_layout Standard
+Then we could use macro write! and writeln! base on them.
 \end_layout
 
 \begin_layout Section
@@ -3890,8 +4031,22 @@ Introduction
 \begin_layout Standard
 In this section, we will extend the write_byte function to write_string,
  using it to output strings.
- Furthermore, we will leverage Rust's trait functionality to accomplish
- formatted output.
+ Furthermore, we will use Rust's trait functionality to achieve formatted
+ output.
+\end_layout
+
+\begin_layout Standard
+What is write! and writeln! ? They are called declarative macro
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Declarative-Macro"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -4118,7 +4273,17 @@ Ok(()): It means that the operation was successful, but there is no specific
 \end_layout
 
 \begin_layout Standard
-You can learn more about trait here 
+You can learn more about trait here
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Trait"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -4930,6 +5095,20 @@ Step 2: Read CR3 register
 \end_layout
 
 \begin_layout Standard
+More about CR3
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:CR3-register"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 The CR3 register stores the physical address of the L4 page table we want
  to access.
  Let's access it and print out the address of the L4 page table.
@@ -5677,8 +5856,533 @@ Task 3 - Address translation
 Introduction
 \end_layout
 
+\begin_layout Standard
+Here we will combine what we've done before, traversing the four-level page
+ table and adding the physical offset to complete the translation from virtual
+ addresses to physical addresses.
+\end_layout
+
+\begin_layout Standard
+We will create a function that reads a virtual address and a physical offset
+ value, obtains the index of each level of the page table, traverses the
+ page table, and then obtains the final physical address, adding the offset
+ for output.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename /home/lucia/Pictures/Screenshots/Screenshot from 2024-03-27 12-31-42.png
+	width 60page%
+
+\end_inset
+
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "key-9"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 Implementation
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Step 1: Create src/memory.rs
+\end_layout
+
+\begin_layout Standard
+To better maintain and read the code, as well as for future testing purposes,
+ we use a separate file.
+ First, we import modules and define functions.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+use x86_64::structures::paging::PageTable;
+\end_layout
+
+\begin_layout Plain Layout
+
+use x86_64::PhysAddr;
+\end_layout
+
+\begin_layout Plain Layout
+
+use x86_64::VirtAddr;
+\end_layout
+
+\begin_layout Plain Layout
+
+use x86_64::registers::control::Cr3;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+pub unsafe fn translate_address(addr: VirtAddr, physical_memory_offset:
+ VirtAddr)
+\end_layout
+
+\begin_layout Plain Layout
+
+                        -> Option<PhysAddr>
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Since we need to read registers, reference, and dereference raw pointers,
+ this function is unsafe.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Option<PhysAddr>
+\series default
+: This mean this function may return PhysAddr or return None
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Step 2: Get L4 frame
+\end_layout
+
+\begin_layout Standard
+Do similar as previous task.
+ We read CR3 and get the frame address.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+    let (l4_frame, _) = Cr3::read();
+\end_layout
+
+\begin_layout Plain Layout
+
+    let mut frame_addr = l4_frame;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Step 3: Get indexes of each table
+\end_layout
+
+\begin_layout Standard
+As the figure shown in introduction, we could get the index of each level.
+ It is used to gain the address of next table.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+let table_offset = [
+\end_layout
+
+\begin_layout Plain Layout
+
+        addr.p4_index(), addr.p3_index(), addr.p2_index(), addr.p1_index()
+\end_layout
+
+\begin_layout Plain Layout
+
+    ];
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Step 4: Traverse the page table
+\end_layout
+
+\begin_layout Standard
+Using a for loop to traverse all 4 table
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+// traverse the page table to find the frame corresponding to the address
+\end_layout
+
+\begin_layout Plain Layout
+
+    for &index in &table_offset {
+\end_layout
+
+\begin_layout Plain Layout
+
+        // calculate the virtual address of the next table
+\end_layout
+
+\begin_layout Plain Layout
+
+        let virt = physical_memory_offset + frame_addr.start_address().as_u64();
+\end_layout
+
+\begin_layout Plain Layout
+
+        let table_ptr: *const PageTable = virt.as_ptr();
+\end_layout
+
+\begin_layout Plain Layout
+
+        let table = unsafe {&*table_ptr};
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+        // get the frame from the table entry and update the frame address
+\end_layout
+
+\begin_layout Plain Layout
+
+        let entry = &table[index];
+\end_layout
+
+\begin_layout Plain Layout
+
+        frame_addr = match entry.frame() {
+\end_layout
+
+\begin_layout Plain Layout
+
+            Ok(frame) => frame,
+\end_layout
+
+\begin_layout Plain Layout
+
+            Err(_) => return None
+\end_layout
+
+\begin_layout Plain Layout
+
+        };
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The first paragraph is similar to handling Task 2, but we need to obtain
+ specific entries.
+ So we get rentry from &table[index].
+ Then is exception handling part, if the entry is not exist, the function
+ will return None.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Step 5: Return address
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+...
+\end_layout
+
+\begin_layout Plain Layout
+
+frame_addr = match entry.frame() {
+\end_layout
+
+\begin_layout Plain Layout
+
+            Ok(frame) => frame,
+\end_layout
+
+\begin_layout Plain Layout
+
+            Err(_) => return None
+\end_layout
+
+\begin_layout Plain Layout
+
+        };
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    // calculate the physical address
+\end_layout
+
+\begin_layout Plain Layout
+
+    Some(frame_addr.start_address() + u64::from(addr.page_offset()))
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For Rust function,it implicitly return the value of the last expression
+ evaluated.
+ Some(T) is used when there is a value and it wraps the value inside.
+ 
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Step 6: Print out translation result
+\end_layout
+
+\begin_layout Standard
+Remember add this module into lib.rs
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+pub mod translate;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For the main.rs
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+use chronos_labs::WRITER;
+\end_layout
+
+\begin_layout Plain Layout
+
+use core::fmt::Write;
+\end_layout
+
+\begin_layout Plain Layout
+
+use bootloader::BootInfo;
+\end_layout
+
+\begin_layout Plain Layout
+
+use x86_64::VirtAddr;
+\end_layout
+
+\begin_layout Plain Layout
+
+use chronos_labs::translate::translate_address;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#[no_mangle]    // don't mangle the name of this function
+\end_layout
+
+\begin_layout Plain Layout
+
+pub extern "C" fn _start(boot_info: &'static BootInfo) -> !{
+\end_layout
+
+\begin_layout Plain Layout
+
+    let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    // try to translate some addresses
+\end_layout
+
+\begin_layout Plain Layout
+
+    // the VGA buffer page
+\end_layout
+
+\begin_layout Plain Layout
+
+    let virt_VGA = VirtAddr::new(0xb8000);
+\end_layout
+
+\begin_layout Plain Layout
+
+    let phys_VGA = unsafe { translate_address(virt_VGA, phys_mem_offset)
+ };
+\end_layout
+
+\begin_layout Plain Layout
+
+    writeln!(WRITER.lock(),"Translate from virtual address from {:?} to physical
+ address {:?}", virt_VGA, phys_VGA);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    // exsting page
+\end_layout
+
+\begin_layout Plain Layout
+
+    let virt_existing = VirtAddr::new(0x201008);
+\end_layout
+
+\begin_layout Plain Layout
+
+    let phys_existing = unsafe { translate_address(virt_existing, phys_mem_offse
+t) };
+\end_layout
+
+\begin_layout Plain Layout
+
+    writeln!(WRITER.lock(),"Translate from virtual address from {:?} to physical
+ address {:?}", virt_existing, phys_existing);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    // non-existing page
+\end_layout
+
+\begin_layout Plain Layout
+
+    let virt_non_existing = VirtAddr::new(0xffffffffc0000000);
+\end_layout
+
+\begin_layout Plain Layout
+
+    let phys_non_existing = unsafe { translate_address(virt_non_existing,
+ phys_mem_offset) };
+\end_layout
+
+\begin_layout Plain Layout
+
+    writeln!(WRITER.lock(),"Translate from virtual address from {:?} to physical
+ address {:?}", virt_non_existing, phys_non_existing);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    loop {}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+When we write in VGA, it is virtual address but this is special case that,
+ physical address is as same as virtual.
 \end_layout
 
 \begin_layout Subsection
@@ -5692,7 +6396,7 @@ You would get the output of the translation from virtual address to physical
 
 \begin_layout Standard
 \begin_inset Graphics
-	filename /home/lucia/Pictures/Screenshots/Screenshot from 2024-03-12 13-48-34.png
+	filename /home/lucia/Pictures/Screenshots/Screenshot from 2024-03-26 23-34-26.png
 	width 60page%
 
 \end_inset
@@ -5710,6 +6414,10 @@ Utility - Test tool
 \size huge
 \color red
 Before using it, remember to comment
+\end_layout
+
+\begin_layout Standard
+in Cargo.toml
 \end_layout
 
 \begin_layout Standard
@@ -5811,6 +6519,46 @@ cargo test --test lab2
 \begin_layout Standard
 And for the exception handling, make sure you provide blue color for the
  exception, or the test would fail.
+\end_layout
+
+\begin_layout Section
+Lab 4
+\end_layout
+
+\begin_layout Standard
+The test is available at branch 
+\begin_inset CommandInset href
+LatexCommand href
+name "test-lab4"
+target "https://github.com/acyanbird/chronos_labs/tree/test-lab4"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It will check the translate function.
+\end_layout
+
+\begin_layout Standard
+Using command
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+cargo test --test lab4
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Chapter
@@ -6175,6 +6923,13 @@ Physical address
 
 \begin_layout Section
 CR3 register
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:CR3-register"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -6298,6 +7053,22 @@ Frank, M.
  Available at: https://superuser.com/questions/655121/on-x86-architecture-why-are
 -there-fewer-bits-for-virtual-address-space-than-phy (Accessed: 24 March
  2024).
+ 
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+key "key-9"
+literal "false"
+
+\end_inset
+
+Oppermann, P.
+ (2021) Introduction to paging, Introduction to Paging | Writing an OS in
+ Rust.
+ Available at: https://os.phil-opp.com/paging-introduction/ (Accessed: 27
+ March 2024).
  
 \end_layout
 
