@@ -4933,6 +4933,70 @@ In this lab, you will implement the aspect of the operating system that
  manages interrupts and hardware input.
 \end_layout
 
+\begin_layout Section
+Task 1 - Setup interrupt
+\end_layout
+
+\begin_layout Subsection
+Introduction
+\end_layout
+
+\begin_layout Subsection
+Implementation
+\end_layout
+
+\begin_layout Subsection
+Output
+\end_layout
+
+\begin_layout Section
+Task 2 - Timer
+\end_layout
+
+\begin_layout Subsection
+Introduction
+\end_layout
+
+\begin_layout Subsection
+Implementation
+\end_layout
+
+\begin_layout Subsection
+Output
+\end_layout
+
+\begin_layout Section
+Task 3 - Keybroad input
+\end_layout
+
+\begin_layout Subsection
+Introduction
+\end_layout
+
+\begin_layout Subsection
+Implementation
+\end_layout
+
+\begin_layout Subsection
+Output
+\end_layout
+
+\begin_layout Section
+Task 4 - Enable numlock
+\end_layout
+
+\begin_layout Subsection
+Introduction
+\end_layout
+
+\begin_layout Subsection
+Implementation
+\end_layout
+
+\begin_layout Subsection
+Output
+\end_layout
+
 \begin_layout Chapter
 Lab 4 - Paging
 \end_layout
@@ -6522,6 +6586,61 @@ And for the exception handling, make sure you provide blue color for the
 \end_layout
 
 \begin_layout Section
+Lab 3
+\end_layout
+
+\begin_layout Standard
+The test is available at branch 
+\begin_inset CommandInset href
+LatexCommand href
+name "test-lab3"
+target "https://github.com/acyanbird/chronos_labs/tree/test-lab3"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Make NUMLOCK public to run test
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+pub static NUMLOCK: Mutex<bool> = Mutex::new(false);
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Using command
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+cargo test --test lab3
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
 Lab 4
 \end_layout
 
@@ -6875,6 +6994,14 @@ If you create a VGAChar with an ascii of 0x41 ('A') and a color of 0x04,
  it would be stored in memory as 41 04 in a little endian system.
  This is because ascii_character is the first field in the struct, so it
  gets the lower memory address.
+\end_layout
+
+\begin_layout Section
+IDT
+\end_layout
+
+\begin_layout Section
+8259 PIC
 \end_layout
 
 \begin_layout Section
