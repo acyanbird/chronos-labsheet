@@ -147,6 +147,11 @@ status open
 \end_layout
 
 \begin_layout Standard
+These lab is running and tested on Linux (Debian) only for now.
+ 
+\end_layout
+
+\begin_layout Standard
 Please ensure to stay updated with the GitHub repo 
 \begin_inset CommandInset href
 LatexCommand href
@@ -1434,13 +1439,32 @@ literal "false"
 Lab 1 - Getting started
 \end_layout
 
-\begin_layout Standard
-These lab is running and tested on Linux (Debian) only for now.
- 
-\end_layout
-
 \begin_layout Section
 Expected Outcome
+\end_layout
+
+\begin_layout Standard
+In this Lab you would learn:
+\end_layout
+
+\begin_layout Itemize
+How to create a Rust program in standalone mode
+\end_layout
+
+\begin_layout Itemize
+Variable in Rust
+\end_layout
+
+\begin_layout Itemize
+Function in Rust
+\end_layout
+
+\begin_layout Itemize
+How bootloader works
+\end_layout
+
+\begin_layout Itemize
+What is VGA buffer
 \end_layout
 
 \begin_layout Standard
@@ -2737,6 +2761,21 @@ Lab 2 - VGA output
 
 \begin_layout Section
 Expected Outcome
+\end_layout
+
+\begin_layout Standard
+This lab is relating to the output operation in OS, it will show the things
+ on screen.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename /home/lucia/Pictures/Screenshots/Screenshot from 2024-04-06 00-00-54.png
+	width 70page%
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -4929,6 +4968,21 @@ Expected Outcome
 \end_layout
 
 \begin_layout Standard
+This lab is realting to the hardware interruption in operating system, OS
+ control input through interrupt.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename /home/lucia/Pictures/Screenshots/Screenshot from 2024-04-06 00-08-14.png
+	width 60page%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 In this lab, you will implement the aspect of the operating system that
  manages interrupts and hardware input.
 \end_layout
@@ -4941,12 +4995,353 @@ Task 1 - Setup interrupt
 Introduction
 \end_layout
 
+\begin_layout Standard
+In this task, we need to create an interrupt module and define the IDT (Interrup
+t Descriptor Table).
+ We'll test it using a breakpoint exception.
+ We will handle breakpoint interrupts by defining a custom function in IDT.
+ By checking the IDT, the OS can find the right function to handle interrupt
+ output.
+\end_layout
+
+\begin_layout Standard
+More about IDT please see here
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Interrupt-Descriptor-Table"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 Implementation
 \end_layout
 
+\begin_layout Standard
+
+\series bold
+Step 1: Add dependency
+\end_layout
+
+\begin_layout Standard
+In Cargo.toml
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+[dependencies] 
+\end_layout
+
+\begin_layout Plain Layout
+
+...
+\end_layout
+
+\begin_layout Plain Layout
+
+x86_64 = "0.14.2"
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The x86_64 crate provides interfaces for manipulating the IDT.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Step 2: Create src/interrupts.rs
+\end_layout
+
+\begin_layout Standard
+To better maintain and read the code, as well as for future testing purposes,
+ we use a separate file.
+ First, we import modules and define functions.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+use x86_64::structures::idt::InterruptDescriptorTable;
+\end_layout
+
+\begin_layout Plain Layout
+
+use x86_64::structures::idt::InterruptStackFrame;
+\end_layout
+
+\begin_layout Plain Layout
+
+use crate::WRITER;
+\end_layout
+
+\begin_layout Plain Layout
+
+use core::fmt::Write;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Step 3: Initialize Interrupt Descriptor Table
+\end_layout
+
+\begin_layout Standard
+We need to initialize an IDT, ensuring it remains effective throughout the
+ entire runtime of the program, while also being mutable.
+ Therefore, we define it as a mutable static variable.
+ Then, within the init_idt function, we specify the use of the breakpoint
+ function to handle breakpoint interrupts.
+ Next, we will define the breakpoint function.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+static mut IDT: InterruptDescriptorTable = InterruptDescriptorTable::new();
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+pub fn init_idt() {
+\end_layout
+
+\begin_layout Plain Layout
+
+    unsafe {
+\end_layout
+
+\begin_layout Plain Layout
+
+        IDT.breakpoint.set_handler_fn(breakpoint);
+\end_layout
+
+\begin_layout Plain Layout
+
+        IDT.load();
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Step 4: Create breakpoint function
+\end_layout
+
+\begin_layout Standard
+The function will receive an interrupt stack frame (though we won't use
+ it) and then output a prompt indicating that the function is working correctly.
+ So we add a _ before stack_frame, indicate we won't use this variable.
+ Or directly use _ as varibale name.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+extern "x86-interrupt" fn breakpoint(
+\end_layout
+
+\begin_layout Plain Layout
+
+    _stack_frame: InterruptStackFrame)
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+    writeln!(WRITER.lock(), "Break point works.
+\backslash
+n").unwrap();
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+extern "x86-interrupt" fn breakpoint: This indicates that the function is
+ an interrupt function, unlike regular functions.
+ It needs to automatically save and restore all registers to prevent changes
+ in the program's state during interrupt handling.
+\end_layout
+
+\begin_layout Standard
+More about interrupt stack frame please see here.
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Interrupt-Stack-Frame"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Step 5: Enable on main
+\end_layout
+
+\begin_layout Standard
+We should make module interrupts public at lib.rs
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+pub mod interrupts;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Load IDT and enable interrupt at main.rs
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+use chronos_labs::interrupts; 
+\end_layout
+
+\begin_layout Plain Layout
+
+...
+\end_layout
+
+\begin_layout Plain Layout
+
+pub extern "C" fn _start() -> !{
+\end_layout
+
+\begin_layout Plain Layout
+
+    interrupts::init_idt();
+\end_layout
+
+\begin_layout Plain Layout
+
+    x86_64::instructions::interrupts::int3(); // invoke a breakpoint exception
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    // WRITER.lock().clear_screen();   // uncomment this line to clear the
+ screen
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    loop {}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 Output
+\end_layout
+
+\begin_layout Standard
+The output will show that the breakpoint is working properly.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename /home/lucia/Pictures/Screenshots/Screenshot from 2024-04-09 16-54-23.png
+	width 60page%
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -4957,12 +5352,275 @@ Task 2 - Timer
 Introduction
 \end_layout
 
+\begin_layout Standard
+In this section, we need to introduce a Programmable Interrupt Controller
+ (PIC) to assist us in handling hardware interrupts.
+ We'll try using a timer here, setting it up to regularly print underscores
+ to check if it's working properly.
+ Here we will use Intel 8259 PIC.
+ This kind of PIC typically comes in two pieces, a main one and a secondary
+ one.
+ However, in our project, we only need to use the first two ports of the
+ main PIC.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename /home/lucia/Pictures/Screenshots/Screenshot from 2024-04-09 23-19-57.png
+	width 60page%
+
+\end_inset
+
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "key-10"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 Implementation
 \end_layout
 
+\begin_layout Standard
+
+\series bold
+Step 1: Add dependency
+\end_layout
+
+\begin_layout Standard
+In Cargo.toml
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+[dependencies]
+\end_layout
+
+\begin_layout Plain Layout
+
+...
+\end_layout
+
+\begin_layout Plain Layout
+
+pic8259 = "0.10.1"
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+And add it into src/interrupts.rs, also with a mutex
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+use spin::Mutex;
+\end_layout
+
+\begin_layout Plain Layout
+
+use pic8259::ChainedPics;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Step 2: Initialize PIC
+\end_layout
+
+\begin_layout Standard
+We need to initialize the PIC.
+ Here, we've created a mutex lock because we only want one interrupt handler
+ to access and modify the ChainedPics object at a time to prevent data race.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+pub static PICS: Mutex<ChainedPics> = Mutex::new(unsafe { ChainedPics::new(0,
+ 8) });
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+ChainedPics::new(0, 8): Here, 0 and 8 respectively represent the offsets
+ for the primary and secondary PICs.
+ Remember, each PIC has eight interrupt lines, so the timer we want to access
+ is the first one
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Step 3: Set timer function
+\end_layout
+
+\begin_layout Standard
+We modify init_idt
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+pub fn init_idt() {
+\end_layout
+
+\begin_layout Plain Layout
+
+    unsafe {
+\end_layout
+
+\begin_layout Plain Layout
+
+        IDT.breakpoint.set_handler_fn(breakpoint);
+\end_layout
+
+\begin_layout Plain Layout
+
+        IDT.load();
+\end_layout
+
+\begin_layout Plain Layout
+
+        IDT[0].set_handler_fn(timer);
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Indicate the function handle with the first line of PIC is timer.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Step 4: Create timer function
+\end_layout
+
+\begin_layout Standard
+Similar as the breakpoint function
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+extern "x86-interrupt" fn timer(_: InterruptStackFrame)
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+    write!(WRITER.lock(), "_").unwrap();
+\end_layout
+
+\begin_layout Plain Layout
+
+    unsafe {
+\end_layout
+
+\begin_layout Plain Layout
+
+        PICS.lock()
+\end_layout
+
+\begin_layout Plain Layout
+
+            .notify_end_of_interrupt(0);
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+But we need to notify the end of interruption in this function, or the system
+ will only output only one underscore.
+\end_layout
+
 \begin_layout Subsection
 Output
+\end_layout
+
+\begin_layout Standard
+The output will continuously print underscores.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename /home/lucia/Pictures/Screenshots/Screenshot from 2024-04-06 00-55-31.png
+	width 60page%
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -4973,12 +5631,340 @@ Task 3 - Keybroad input
 Introduction
 \end_layout
 
+\begin_layout Standard
+In this task, we will handle keyboard input (specifically from a PS/2 keyboard).
+ Similar to other interrupts, when a user presses or releases a key on the
+ keyboard, the computer receives corresponding scan codes.
+ Therefore, we need to read and translate these scan codes.
+ Here, we will read and translate the scan codes for the numbers 0 to 9
+ on the main keyboard, as well as on the numeric keypad, along with the
+ period (.) symbol.
+ For more about the scancode please see the osdev wiki here 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://wiki.osdev.org/Keyboard#Scan_Code_Set_1
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 Implementation
 \end_layout
 
+\begin_layout Standard
+
+\series bold
+Step 1: Add dependency
+\end_layout
+
+\begin_layout Standard
+The keybroad will send scancode to the system, at this point it will send
+ to port 0x60
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+use x86_64::instructions::port::Port;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Step 2: Set keybroad function
+\end_layout
+
+\begin_layout Standard
+Similar as timer, we set keybroad function to 1
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+        IDT[0].set_handler_fn(timer_off);
+\end_layout
+
+\begin_layout Plain Layout
+
+        IDT[1].set_handler_fn(keyboard);
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Step 3: Create keybroad function
+\end_layout
+
+\begin_layout Standard
+We create the function and initialize port to receive the scancode.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+extern "x86-interrupt" fn keyboard(_: InterruptStackFrame)
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+    let mut port = Port::new(0x60);
+\end_layout
+
+\begin_layout Plain Layout
+
+    let scancode: u8 = unsafe { port.read() };
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Step 3: Translate scancode
+\end_layout
+
+\begin_layout Standard
+Use match to translate scancode, you can see more about match here
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Match"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Remember you could get the transcode on osdev wiki.
+ We want the number print out when user press the button, not release the
+ button.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+let mut key: Option<&str> = None;
+\end_layout
+
+\begin_layout Plain Layout
+
+    key = match scancode {
+\end_layout
+
+\begin_layout Plain Layout
+
+        0x02 | 0x4F => Some("1"),
+\end_layout
+
+\begin_layout Plain Layout
+
+        0x03 | 0x50 => Some("2"),
+\end_layout
+
+\begin_layout Plain Layout
+
+        0x04 | 0x51 => Some("3"),
+\end_layout
+
+\begin_layout Plain Layout
+
+        0x05 | 0x4B => Some("4"),
+\end_layout
+
+\begin_layout Plain Layout
+
+        0x06 | 0x4C => Some("5"),
+\end_layout
+
+\begin_layout Plain Layout
+
+        0x07 | 0x4D => Some("6"),
+\end_layout
+
+\begin_layout Plain Layout
+
+        0x08 | 0x47 => Some("7"),
+\end_layout
+
+\begin_layout Plain Layout
+
+        0x09 | 0x48 => Some("8"),
+\end_layout
+
+\begin_layout Plain Layout
+
+        0x0a | 0x49 => Some("9"),
+\end_layout
+
+\begin_layout Plain Layout
+
+        0x0b | 0x52 => Some("0"),
+\end_layout
+
+\begin_layout Plain Layout
+
+        0x53 => Some("."),
+\end_layout
+
+\begin_layout Plain Layout
+
+        _ => None,
+\end_layout
+
+\begin_layout Plain Layout
+
+    };
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+key: Option<&str>: key could be a reference to a string (Some(&str)), or
+ it might have no value (None)
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Step 4: Output key
+\end_layout
+
+\begin_layout Standard
+As same as timer, remember to end the interrupt when finish output.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+    if let Some(key) = key {
+\end_layout
+
+\begin_layout Plain Layout
+
+        writeln!(WRITER.lock(), "{}", key);
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    unsafe {
+\end_layout
+
+\begin_layout Plain Layout
+
+        PICS.lock()
+\end_layout
+
+\begin_layout Plain Layout
+
+            .notify_end_of_interrupt(1);
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 Output
+\end_layout
+
+\begin_layout Standard
+You could set timer to output nothing (change 
+\begin_inset Quotes eld
+\end_inset
+
+_
+\begin_inset Quotes erd
+\end_inset
+
+ to 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+) if you find that is a bit messy.
+\end_layout
+
+\begin_layout Standard
+Using the numeric keypad and number keys for input, you will see the VGA
+ display showing the corresponding numbers and decimal points.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename /home/lucia/Pictures/Screenshots/Screenshot from 2024-04-06 00-57-13.png
+	width 60page%
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -4989,12 +5975,416 @@ Task 4 - Enable numlock
 Introduction
 \end_layout
 
+\begin_layout Standard
+In daily use, we often find that a single key can represent multiple characters.
+ We use various methods such as capslock, numlock, or pressing Shift to
+ toggle output.
+ Here, let's take numlock as an example.
+ When we press numlock it will change the output content.
+ If your computer does not support the numeric keypad, you can also set
+ it to another key.
+ However, remember that VGA has limited support for output and cannot output
+ all symbols.
+\end_layout
+
 \begin_layout Subsection
 Implementation
 \end_layout
 
+\begin_layout Standard
+
+\series bold
+Step 1: Create numlock value
+\end_layout
+
+\begin_layout Standard
+The numlock should be a static boolean value default to false, itneeds to
+ be accessed and modified throughout the entire program.
+ Similar as the PICS 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+static NUMLOCK: Mutex<bool> = Mutex::new(false);
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Step 2 : Get and change the numlock
+\end_layout
+
+\begin_layout Standard
+Do it inside the keyborad function.
+ We need to get the mutex lock, and when uset press down numlock, flipping
+ the state of the numlockn key.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+let mut key: Option<&str> = None; 
+\end_layout
+
+\begin_layout Plain Layout
+
+let mut numlock = NUMLOCK.lock();
+\end_layout
+
+\begin_layout Plain Layout
+
+    if scancode == 0x45 {
+\end_layout
+
+\begin_layout Plain Layout
+
+        *numlock = !*numlock;
+\end_layout
+
+\begin_layout Plain Layout
+
+        key = Some("numlock");
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+*numlock: numlock is a mutable reference to a boolean value that is protected
+ by a mutex.
+ So *numlock is dereferencing the numlock reference.
+ It will access the boolean value
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Step 3: Handle different input
+\end_layout
+
+\begin_layout Standard
+When we obtain the value of numlock, we can differentiate input into two
+ cases: Num Lock on and off.
+ Complete this if statement to accomplish the conversion.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+else if !*numlock {
+\end_layout
+
+\begin_layout Plain Layout
+
+        key = match scancode {
+\end_layout
+
+\begin_layout Plain Layout
+
+            0x02 | 0x4F => Some("1"),
+\end_layout
+
+\begin_layout Plain Layout
+
+            0x03 | 0x50 => Some("2"),
+\end_layout
+
+\begin_layout Plain Layout
+
+            0x04 | 0x51 => Some("3"),
+\end_layout
+
+\begin_layout Plain Layout
+
+            0x05 | 0x4B => Some("4"),
+\end_layout
+
+\begin_layout Plain Layout
+
+            0x06 | 0x4C => Some("5"),
+\end_layout
+
+\begin_layout Plain Layout
+
+            0x07 | 0x4D => Some("6"),
+\end_layout
+
+\begin_layout Plain Layout
+
+            0x08 | 0x47 => Some("7"),
+\end_layout
+
+\begin_layout Plain Layout
+
+            0x09 | 0x48 => Some("8"),
+\end_layout
+
+\begin_layout Plain Layout
+
+            0x0a | 0x49 => Some("9"),
+\end_layout
+
+\begin_layout Plain Layout
+
+            0x0b | 0x52 => Some("0"),
+\end_layout
+
+\begin_layout Plain Layout
+
+            0x53 => Some("."),
+\end_layout
+
+\begin_layout Plain Layout
+
+            _ => None,
+\end_layout
+
+\begin_layout Plain Layout
+
+        };
+\end_layout
+
+\begin_layout Plain Layout
+
+    } else {
+\end_layout
+
+\begin_layout Plain Layout
+
+        key = match scancode {
+\end_layout
+
+\begin_layout Plain Layout
+
+            0x02 => Some("1"),
+\end_layout
+
+\begin_layout Plain Layout
+
+            0x03 => Some("2"),
+\end_layout
+
+\begin_layout Plain Layout
+
+            0x04 => Some("3"),
+\end_layout
+
+\begin_layout Plain Layout
+
+            0x05 => Some("4"),
+\end_layout
+
+\begin_layout Plain Layout
+
+            0x06 | 0x4C => Some("5"),
+\end_layout
+
+\begin_layout Plain Layout
+
+            0x07 => Some("6"),
+\end_layout
+
+\begin_layout Plain Layout
+
+            0x08 => Some("7"),
+\end_layout
+
+\begin_layout Plain Layout
+
+            0x09 => Some("8"),
+\end_layout
+
+\begin_layout Plain Layout
+
+            0x0a => Some("9"),
+\end_layout
+
+\begin_layout Plain Layout
+
+            0x0b => Some("0"),
+\end_layout
+
+\begin_layout Plain Layout
+
+            0x4F => Some("end"),
+\end_layout
+
+\begin_layout Plain Layout
+
+            0x50 => Some("DownArrow"),
+\end_layout
+
+\begin_layout Plain Layout
+
+            0x51 => Some("PageDown"),
+\end_layout
+
+\begin_layout Plain Layout
+
+            0x4B => Some("LeftArrow"),
+\end_layout
+
+\begin_layout Plain Layout
+
+            0x4D => Some("RightArrow"),
+\end_layout
+
+\begin_layout Plain Layout
+
+            0x47 => Some("home"),
+\end_layout
+
+\begin_layout Plain Layout
+
+            0x48 => Some("UpArrow"),
+\end_layout
+
+\begin_layout Plain Layout
+
+            0x49 => Some("PageUp"),
+\end_layout
+
+\begin_layout Plain Layout
+
+            0x52 => Some("Insert"),
+\end_layout
+
+\begin_layout Plain Layout
+
+            0x53 => Some("Delete"),
+\end_layout
+
+\begin_layout Plain Layout
+
+            _ => None,
+\end_layout
+
+\begin_layout Plain Layout
+
+        };
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This is just an example; you can implement your own conversion and keyboard
+ output.
+ Don't forget to output and end the interrupt.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+if let Some(key) = key {
+\end_layout
+
+\begin_layout Plain Layout
+
+        writeln!(WRITER.lock(), "{}", key);
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    unsafe {
+\end_layout
+
+\begin_layout Plain Layout
+
+        PICS.lock()
+\end_layout
+
+\begin_layout Plain Layout
+
+            .notify_end_of_interrupt(1);
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 Output
+\end_layout
+
+\begin_layout Standard
+By using the Num Lock key, you can change the output on the numeric keypad.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename /home/lucia/Pictures/Screenshots/Screenshot from 2024-04-06 00-58-26.png
+	width 60page%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The Rust Embedded community also provides a fantastic PS/2 keyboard implementati
+on that you can try using directly or refer to for implementing more keyboard
+ inputs yourself!
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://github.com/rust-embedded-community/pc-keyboard
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Chapter
@@ -5003,6 +6393,11 @@ Lab 4 - Paging
 
 \begin_layout Section
 Expected Outcome
+\end_layout
+
+\begin_layout Standard
+In this lab you will learn how the OS is manipulate the memory.
+ This is relating to the memory management of the Operating system.
 \end_layout
 
 \begin_layout Standard
@@ -6997,11 +8392,46 @@ If you create a VGAChar with an ascii of 0x41 ('A') and a color of 0x04,
 \end_layout
 
 \begin_layout Section
-IDT
+Interrupt Descriptor Table
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Interrupt-Descriptor-Table"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The IDT is essentially a data structure used by the operating system to
+ handle interrupts and exceptions.
+ When something interrupt the working system, it needs to know what to do.
+ That's where the IDT comes in.
+ The operating system looks up the IDT and picks the right function to handle
+ the interrupt.
+ In our case in lab 3 task 1, we declare a breakpoint function to handle
+ the breakpoint interrupt.
 \end_layout
 
 \begin_layout Section
-8259 PIC
+Interrupt Stack Frame
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Interrupt-Stack-Frame"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+nterrupt Stack Frame is like a special note that a computer uses to remember
+ what it was doing whenever it has to suddenly stop and do something else.
+ Before the system jump to handle interrupt, the computer uses the Interrupt
+ Stack Frame to write down details about the task it was doing.
+ Then, it goes to address the interrupt.
+ After dealing with the interrupt, the computer looks back at the Interrupt
+ Stack Frame, sees where it left off, and resumes its original task.
 \end_layout
 
 \begin_layout Section
@@ -7196,6 +8626,21 @@ Oppermann, P.
  Rust.
  Available at: https://os.phil-opp.com/paging-introduction/ (Accessed: 27
  March 2024).
+ 
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+key "key-10"
+literal "false"
+
+\end_inset
+
+Oppermann, P.
+ (2018) Hardware interrupts, Hardware Interrupts | Writing an OS in Rust.
+ Available at: https://os.phil-opp.com/hardware-interrupts/ (Accessed: 09
+ April 2024).
  
 \end_layout
 
