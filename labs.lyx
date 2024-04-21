@@ -202,53 +202,6 @@ After completing the code, you can compare your own code or start development
 \end_layout
 
 \begin_layout Standard
-You can get the codes by
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-lstparams "language=no language,language=bash"
-inline false
-status open
-
-\begin_layout Plain Layout
-
-git clone git@github.com:acyanbird/chronos_labs.git
-\end_layout
-
-\begin_layout Plain Layout
-
-cd chronos_labs/ 
-\end_layout
-
-\begin_layout Plain Layout
-
-git branch -r | grep -v '
-\backslash
-->' | sed "s,
-\backslash
-x1B
-\backslash
-[[0-9;]*[a-zA-Z],,g" | while read remote; do git branch --track "${remote#origin
-/}" "$remote"; done
-\end_layout
-
-\begin_layout Plain Layout
-
-git fetch --all
-\end_layout
-
-\begin_layout Plain Layout
-
-git pull --all
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 You can get the code from each task by
 \end_layout
 
@@ -512,7 +465,7 @@ cd hello
 
 \begin_layout Standard
 It will also generate an empty git repository for version control, and a
- cargo.toml that procvie project basic information and dependency.
+ cargo.toml that provides project basic information and dependency.
  We could ignore it right now.
  The file structure is like:
 \end_layout
@@ -4960,7 +4913,7 @@ Output
 \end_layout
 
 \begin_layout Chapter
-Lab 3 - Keybroad Input
+Lab 3 - Keyboard Input
 \end_layout
 
 \begin_layout Section
@@ -4968,7 +4921,7 @@ Expected Outcome
 \end_layout
 
 \begin_layout Standard
-This lab is realting to the hardware interruption in operating system, OS
+This lab is relating to the hardware interruption in operating system, OS
  control input through interrupt.
 \end_layout
 
@@ -4996,16 +4949,16 @@ Introduction
 \end_layout
 
 \begin_layout Standard
-In this task, we need to create an interrupt module and define the IDT (Interrup
-t Descriptor Table).
+In this task, we need to create an interrupt module and define the ID (Interrupt
+ Descriptor Table).
  We'll test it using a breakpoint exception.
- We will handle breakpoint interrupts by defining a custom function in IDT.
- By checking the IDT, the OS can find the right function to handle interrupt
+ We will handle breakpoint interrupts by defining a custom function in ID.
+ By checking the ID, the OS can find the right function to handle interrupt
  output.
 \end_layout
 
 \begin_layout Standard
-More about IDT please see here
+More about ID please see here
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:Interrupt-Descriptor-Table"
@@ -5058,7 +5011,7 @@ x86_64 = "0.14.2"
 \end_layout
 
 \begin_layout Standard
-The x86_64 crate provides interfaces for manipulating the IDT.
+The x86_64 crate provides interfaces for manipulating the ID.
 \end_layout
 
 \begin_layout Standard
@@ -5110,7 +5063,7 @@ Step 3: Initialize Interrupt Descriptor Table
 \end_layout
 
 \begin_layout Standard
-We need to initialize an IDT, ensuring it remains effective throughout the
+We need to initialize an ID, ensuring it remains effective throughout the
  entire runtime of the program, while also being mutable.
  Therefore, we define it as a mutable static variable.
  Then, within the init_idt function, we specify the use of the breakpoint
@@ -5125,7 +5078,7 @@ status open
 
 \begin_layout Plain Layout
 
-static mut IDT: InterruptDescriptorTable = InterruptDescriptorTable::new();
+static mut ID: InterruptDescriptorTable = InterruptDescriptorTable::new();
 \end_layout
 
 \begin_layout Plain Layout
@@ -5144,12 +5097,12 @@ pub fn init_idt() {
 
 \begin_layout Plain Layout
 
-        IDT.breakpoint.set_handler_fn(breakpoint);
+        ID.breakpoint.set_handler_fn(breakpoint);
 \end_layout
 
 \begin_layout Plain Layout
 
-        IDT.load();
+        ID.load();
 \end_layout
 
 \begin_layout Plain Layout
@@ -5177,7 +5130,7 @@ Step 4: Create breakpoint function
 The function will receive an interrupt stack frame (though we won't use
  it) and then output a prompt indicating that the function is working correctly.
  So we add a _ before stack_frame, indicate we won't use this variable.
- Or directly use _ as varibale name.
+ Or directly use _ as variable name.
 \end_layout
 
 \begin_layout Standard
@@ -5264,7 +5217,7 @@ pub mod interrupts;
 \end_layout
 
 \begin_layout Standard
-Load IDT and enable interrupt at main.rs
+Load ID and enable interrupt at main.rs
 \end_layout
 
 \begin_layout Standard
@@ -5508,17 +5461,17 @@ pub fn init_idt() {
 
 \begin_layout Plain Layout
 
-        IDT.breakpoint.set_handler_fn(breakpoint);
+        ID.breakpoint.set_handler_fn(breakpoint);
 \end_layout
 
 \begin_layout Plain Layout
 
-        IDT.load();
+        ID.load();
 \end_layout
 
 \begin_layout Plain Layout
 
-        IDT[0].set_handler_fn(timer);
+        ID[0].set_handler_fn(timer);
 \end_layout
 
 \begin_layout Plain Layout
@@ -5624,7 +5577,7 @@ The output will continuously print underscores.
 \end_layout
 
 \begin_layout Section
-Task 3 - Keybroad input
+Task 3 - Keyboard input
 \end_layout
 
 \begin_layout Subsection
@@ -5664,7 +5617,7 @@ Step 1: Add dependency
 \end_layout
 
 \begin_layout Standard
-The keybroad will send scancode to the system, at this point it will send
+The keyboard will send scancode to the system, at this point it will send
  to port 0x60
 \end_layout
 
@@ -5686,11 +5639,11 @@ use x86_64::instructions::port::Port;
 \begin_layout Standard
 
 \series bold
-Step 2: Set keybroad function
+Step 2: Set keyboard function
 \end_layout
 
 \begin_layout Standard
-Similar as timer, we set keybroad function to 1
+Similar as timer, we set keyboard function to 1
 \end_layout
 
 \begin_layout Standard
@@ -5700,12 +5653,12 @@ status open
 
 \begin_layout Plain Layout
 
-        IDT[0].set_handler_fn(timer_off);
+        ID[0].set_handler_fn(timer_off);
 \end_layout
 
 \begin_layout Plain Layout
 
-        IDT[1].set_handler_fn(keyboard);
+        ID[1].set_handler_fn(keyboard);
 \end_layout
 
 \end_inset
@@ -5716,7 +5669,7 @@ status open
 \begin_layout Standard
 
 \series bold
-Step 3: Create keybroad function
+Step 3: Create keyboard function
 \end_layout
 
 \begin_layout Standard
@@ -5998,8 +5951,8 @@ Step 1: Create numlock value
 \end_layout
 
 \begin_layout Standard
-The numlock should be a static boolean value default to false, itneeds to
- be accessed and modified throughout the entire program.
+The numlock should be a static boolean value default to false, it needs
+ to be accessed and modified throughout the entire program.
  Similar as the PICS 
 \end_layout
 
@@ -6025,9 +5978,9 @@ Step 2 : Get and change the numlock
 \end_layout
 
 \begin_layout Standard
-Do it inside the keyborad function.
- We need to get the mutex lock, and when uset press down numlock, flipping
- the state of the numlockn key.
+Do it inside the keyboard function.
+ We need to get the mutex lock, and when user press down numlock, flipping
+ the state of the numlock key.
 \end_layout
 
 \begin_layout Standard
@@ -6630,7 +6583,7 @@ pub extern "C" fn _start(boot_info: &'static BootInfo) -> ! {
 \end_layout
 
 \begin_layout Standard
-_ menas we will not using this variable, so just ignore it.
+_ means we will not using this variable, so just ignore it.
 \end_layout
 
 \begin_layout Standard
@@ -6979,8 +6932,8 @@ Introduction
 \begin_layout Standard
 In this task, we will learn how to read entries in the page table and use
  this information to access the next level of the page table.
- This task is similar to reading CR3 and generating the mapped-to physical
- address at a specified location.
+ This task is similar to reading CR3 and generating the physical address
+ at a specified location.
  However, to maintain readability, we limit the output to only the first
  few non-empty entries.
  In the labsheet, I will demonstrate how to print the L4 and L3 page tables.
@@ -8403,11 +8356,11 @@ name "sec:Interrupt-Descriptor-Table"
 \end_layout
 
 \begin_layout Standard
-The IDT is essentially a data structure used by the operating system to
- handle interrupts and exceptions.
+The ID is essentially a data structure used by the operating system to handle
+ interrupts and exceptions.
  When something interrupt the working system, it needs to know what to do.
- That's where the IDT comes in.
- The operating system looks up the IDT and picks the right function to handle
+ That's where the ID comes in.
+ The operating system looks up the ID and picks the right function to handle
  the interrupt.
  In our case in lab 3 task 1, we declare a breakpoint function to handle
  the breakpoint interrupt.
