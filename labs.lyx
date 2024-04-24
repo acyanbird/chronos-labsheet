@@ -4949,16 +4949,16 @@ Introduction
 \end_layout
 
 \begin_layout Standard
-In this task, we need to create an interrupt module and define the ID (Interrupt
- Descriptor Table).
+In this task, we need to create an interrupt module and define the IDT (Interrup
+t Descriptor Table).
  We'll test it using a breakpoint exception.
- We will handle breakpoint interrupts by defining a custom function in ID.
- By checking the ID, the OS can find the right function to handle interrupt
+ We will handle breakpoint interrupts by defining a custom function in IDT.
+ By checking the IDT, the OS can find the right function to handle interrupt
  output.
 \end_layout
 
 \begin_layout Standard
-More about ID please see here
+More about IDT please see here
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:Interrupt-Descriptor-Table"
@@ -5011,7 +5011,7 @@ x86_64 = "0.14.2"
 \end_layout
 
 \begin_layout Standard
-The x86_64 crate provides interfaces for manipulating the ID.
+The x86_64 crate provides interfaces for manipulating the IDT.
 \end_layout
 
 \begin_layout Standard
@@ -5063,7 +5063,7 @@ Step 3: Initialize Interrupt Descriptor Table
 \end_layout
 
 \begin_layout Standard
-We need to initialize an ID, ensuring it remains effective throughout the
+We need to initialize an IDT, ensuring it remains effective throughout the
  entire runtime of the program, while also being mutable.
  Therefore, we define it as a mutable static variable.
  Then, within the init_idt function, we specify the use of the breakpoint
@@ -8356,11 +8356,11 @@ name "sec:Interrupt-Descriptor-Table"
 \end_layout
 
 \begin_layout Standard
-The ID is essentially a data structure used by the operating system to handle
- interrupts and exceptions.
+The IDT is essentially a data structure used by the operating system to
+ handle interrupts and exceptions.
  When something interrupt the working system, it needs to know what to do.
- That's where the ID comes in.
- The operating system looks up the ID and picks the right function to handle
+ That's where the IDT comes in.
+ The operating system looks up the IDT and picks the right function to handle
  the interrupt.
  In our case in lab 3 task 1, we declare a breakpoint function to handle
  the breakpoint interrupt.
