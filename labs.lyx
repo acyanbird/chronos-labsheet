@@ -132,13 +132,7 @@ status open
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Graphics
-	filename /home/lucia/2023cse/project/Black_monolith_3_bold.png
-	width 60page%
-
-\end_inset
-
-
+ho m
 \end_layout
 
 \end_inset
@@ -1455,6 +1449,47 @@ https://www.qemu.org/download/
  for installation.
 \end_layout
 
+\begin_layout Standard
+Windows users may need to manually add the QEMU directory to the Path variable.
+ This can be done by searching 
+\begin_inset Quotes eld
+\end_inset
+
+environment variable
+\begin_inset Quotes erd
+\end_inset
+
+ in the control panel, opening 
+\begin_inset Quotes eld
+\end_inset
+
+edit environment variables for your account
+\begin_inset Quotes erd
+\end_inset
+
+, find 
+\begin_inset Quotes eld
+\end_inset
+
+Path
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+edit
+\begin_inset Quotes erd
+\end_inset
+
+, and add C:
+\backslash
+Program Files
+\backslash
+qemu to the list once you had QEMU properly installed.
+\end_layout
+
 \begin_layout Itemize
 Nightly Rust
 \end_layout
@@ -1493,6 +1528,82 @@ rustup update nightly
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+You will wish to confirm that your default version of Rust is the nightly
+ verion by running
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+rustc --version 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+again.
+ 
+\end_layout
+
+\begin_layout Standard
+If the output doesn't consist of 
+\begin_inset Quotes eld
+\end_inset
+
+nightly
+\begin_inset Quotes erd
+\end_inset
+
+, run:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+rustup show 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+which will show all versions of Rust currently installed.
+ You can copy the shown name of the nightly version here, before using
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+rustup default <paste name here> 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+to set it as default.
 \end_layout
 
 \begin_layout Itemize
@@ -1558,6 +1669,30 @@ status open
 \begin_layout Plain Layout
 
 rustup component add llvm-tools-preview
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+rust-src
+\end_layout
+
+\begin_layout Standard
+If error messages regarding to missing rust-src show up in compilation attempts,
+ install it with the following command:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+rustup component add rust-src
 \end_layout
 
 \end_inset
@@ -2105,6 +2240,19 @@ touch chronos_labs.json
 \end_layout
 
 \begin_layout Standard
+Do mind that the command 
+\begin_inset Quotes eld
+\end_inset
+
+touch
+\begin_inset Quotes erd
+\end_inset
+
+ doesn't work for Windows CMD / PowerShell.
+ Windows users will need to create the json file in other ways.
+\end_layout
+
+\begin_layout Standard
 Here is the content of the file:
 \end_layout
 
@@ -2241,6 +2389,56 @@ s are enabled.
 \end_layout
 
 \begin_layout Standard
+If you meet an error message saying 
+\begin_inset Quotes eld
+\end_inset
+
+data layout differs
+\begin_inset Quotes erd
+\end_inset
+
+ during your compilation attempt, edit value of item 
+\begin_inset Quotes eld
+\end_inset
+
+data-layout
+\begin_inset Quotes erd
+\end_inset
+
+ in this file, to:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+"e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-i128:128-f80:128-n8:16:32:64-S128
+"
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+You may also need to edit the corresponding value in file x86_64-bootloader.json
+ in bootloader's installation directory to this value above, if another
+ 
+\begin_inset Quotes eld
+\end_inset
+
+data layout differs
+\begin_inset Quotes erd
+\end_inset
+
+ error shows up with only chronos_labs.json edited.
+\end_layout
+
+\begin_layout Standard
 
 \series bold
 Step 2: Create .cargo/config.toml
@@ -2282,6 +2480,26 @@ cd .cargo && touch config.toml
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+Replace 
+\begin_inset Quotes eld
+\end_inset
+
+&&
+\begin_inset Quotes erd
+\end_inset
+
+ in the command with 
+\begin_inset Quotes eld
+\end_inset
+
+;
+\begin_inset Quotes erd
+\end_inset
+
+, if you are using PowerShell.
 \end_layout
 
 \begin_layout Standard
@@ -2441,6 +2659,38 @@ noprefix "false"
 
 \begin_layout Subsection
 Output
+\end_layout
+
+\begin_layout Standard
+Reminder: 
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+cargo run
+\end_layout
+
+\end_inset
+
+ is used instead of 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+cargo build --target=thumbv6m-none-eabi
+\end_layout
+
+\end_inset
+
+starting from this task.
+ Please use cargo run to get the output.
 \end_layout
 
 \begin_layout Standard
@@ -3967,7 +4217,7 @@ Output
 \end_layout
 
 \begin_layout Standard
-We have 2 test functions, rember to run them one by one!
+We have 2 test functions, remember to run them one by one!
 \end_layout
 
 \begin_layout Standard
@@ -6391,7 +6641,7 @@ noprefix "false"
 
 \begin_layout Standard
 \begin_inset Graphics
-	filename /home/lucia/2023cse/project/sDyyu.png
+	filename /home/lucia/Pictures/sDyyu.png
 	width 50page%
 
 \end_inset
