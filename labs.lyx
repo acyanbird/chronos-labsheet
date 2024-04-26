@@ -121,19 +121,9 @@ Introduction to ChronOS
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float figure
-placement H
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\begin_layout Plain Layout
-ho m
-\end_layout
+\begin_inset Graphics
+	filename /home/lucia/2023cse/project/Black_monolith_3_bold.png
+	width 60page%
 
 \end_inset
 
@@ -141,8 +131,8 @@ ho m
 \end_layout
 
 \begin_layout Standard
-These lab is running and tested on Linux (Debian) only for now.
- 
+These lab is running and tested on Linux (Debian) and Windows 10 for now.
+ Please feel free to raise issue at GitHub if any error occur.
 \end_layout
 
 \begin_layout Standard
